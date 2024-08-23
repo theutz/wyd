@@ -1,10 +1,14 @@
 package project
 
 import (
-	"database/sql"
-
 	"github.com/charmbracelet/log"
+	"gorm.io/gorm"
 )
+
+type Project struct {
+	gorm.Model
+	Name string
+}
 
 type ProjectCmd struct {
 	Add    AddCmd    `cmd:"" help:"add a project"`
@@ -13,13 +17,15 @@ type ProjectCmd struct {
 }
 
 func (cmd *ProjectCmd) Run() error {
-	// db, err := db.Open()
 	return nil
 }
 
-type AddCmd struct{}
+type AddCmd struct {
+	Name string `short:"n" help:"the name of the package"`
+}
 
-func (cmd *AddCmd) Run(l *log.Logger, db *sql.DB) error {
+func (cmd *AddCmd) Run(l *log.Logger, db *gorm.DB) error {
+	db.Create(&Project{Name: "meyh"})
 	return nil
 }
 
