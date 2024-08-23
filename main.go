@@ -9,8 +9,8 @@ import (
 	"github.com/adrg/xdg"
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/exit"
-	"github.com/theutz/wyd/internal/logger"
 )
 
 const shaLen = 7
@@ -25,12 +25,33 @@ var (
 	CommitSHA = ""
 )
 
+type debugLevel int
+
+func (d debugLevel) AfterApply(logger *log.Logger) error {
+	var l log.Level
+
+	switch d {
+	case 1:
+		l = log.InfoLevel
+	case 2:
+		l = log.DebugLevel
+	default:
+		l = log.WarnLevel
+	}
+
+	logger.SetLevel(l)
+
+	return nil
+}
+
 func main() {
-	log := logger.New(false)
+	logger := log.New(os.Stderr)
+	logger.SetPrefix("wyd")
+	logger.SetLevel(log.WarnLevel)
 
 	db_file, err := xdg.DataFile("wyd/wyd.db")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	if Version == "" {
@@ -59,7 +80,8 @@ func main() {
 		kong.Vars{
 			"version": version,
 			"db_file": db_file,
-		})
+		},
+		kong.Bind(logger))
 	if err := ctx.Run(); err != nil {
 		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {
 			os.Exit(exit.StatusAborted)

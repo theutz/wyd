@@ -7,13 +7,13 @@ import (
 )
 
 type Globals struct {
-	DbPath  string           `short:"f" help:"set the path for the sqlite database" type:"path" default:"${db_file}" placeholder:"test.db"`
-	Version kong.VersionFlag `short:"v" help:"Print the version number"`
-	Debug   bool             `short:"d" help:"Turn on verbose logging"`
+	DbPath     string           `short:"f" help:"set the path for the sqlite database" type:"path" default:"${db_file}" placeholder:"test.db"`
+	Version    kong.VersionFlag `short:"v" help:"Print the version number"`
+	DebugLevel debugLevel       `short:"d" help:"Set the debug level" enum:"0,1,2" default:"0"`
 }
 
 type Wyd struct {
-	Client  client.ClientCmd   `cmd:"" help:"work with clients" alias:"clients,c"`
-	Project project.ProjectCmd `cmd:"" help:"work with projects" alias:"projects,p"`
+	Client  client.ClientCmd   `cmd:"" help:"work with clients" aliases:"clients,c"`
+	Project project.ProjectCmd `cmd:"" help:"work with projects" aliases:"projects,p"`
 	Globals
 }
