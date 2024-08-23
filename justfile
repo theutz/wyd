@@ -4,4 +4,4 @@ default:
 
 # run the package every time a change is made
 watch *flags:
-  watchexec go run . {{flags}}
+  watchexec go run -v ./... {{flags}}

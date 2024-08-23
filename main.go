@@ -37,8 +37,18 @@ func main() {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
 	wyd := &Wyd{}
-	ctx := kong.Parse(wyd,
-		kong.Vars{"version": version})
+	ctx := kong.Parse(
+		wyd,
+		kong.Description("Whatch'ya doin'?"),
+		kong.UsageOnError(),
+		kong.ConfigureHelp(kong.HelpOptions{
+			Compact:             true,
+			Summary:             false,
+			NoExpandSubcommands: true,
+		}),
+		kong.Vars{
+			"version": version,
+		})
 	if err := ctx.Run(); err != nil {
 		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {
 			os.Exit(exit.StatusAborted)
