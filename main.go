@@ -6,15 +6,14 @@ import (
 	"os"
 	"runtime/debug"
 
+	"github.com/adrg/xdg"
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
-	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/exit"
+	"github.com/theutz/wyd/internal/logger"
 )
 
 const shaLen = 7
-
-const dbPath = "wyd.db"
 
 var (
 	// Version contains the appliction version number. It's set via ldflags when
@@ -27,6 +26,13 @@ var (
 )
 
 func main() {
+	log := logger.New()
+
+	db_file, err := xdg.DataFile("wyd/wyd.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if Version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
 			Version = info.Main.Version
@@ -40,8 +46,6 @@ func main() {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
 
-	db.New(dbPath)
-
 	wyd := &Wyd{}
 	ctx := kong.Parse(
 		wyd,
@@ -54,6 +58,7 @@ func main() {
 		}),
 		kong.Vars{
 			"version": version,
+			"db_file": db_file,
 		})
 	if err := ctx.Run(); err != nil {
 		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {

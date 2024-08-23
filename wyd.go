@@ -6,8 +6,13 @@ import (
 	"github.com/theutz/wyd/project"
 )
 
+type Globals struct {
+	DbPath  string           `short:"d" help:"set the path for the sqlite database" type:"path" default:"${db_file}" placeholder:"test.db"`
+	Version kong.VersionFlag `short:"v" help:"Print the version number"`
+}
+
 type Wyd struct {
-	Project project.ProjectCmd `cmd:"" help:"work with projects"`
-	Client  client.ClientCmd   `cmd:"" help:"work with clients"`
-	Version kong.VersionFlag   `short:"v" help:"Print the version number"`
+	Client  client.ClientCmd   `cmd:"" help:"work with clients" alias:"clients,c"`
+	Project project.ProjectCmd `cmd:"" help:"work with projects" alias:"projects,p"`
+	Globals
 }
