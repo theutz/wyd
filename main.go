@@ -8,10 +8,13 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
+	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/exit"
 )
 
 const shaLen = 7
+
+const dbPath = "wyd.db"
 
 var (
 	// Version contains the appliction version number. It's set via ldflags when
@@ -36,6 +39,9 @@ func main() {
 	if len(CommitSHA) >= shaLen {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
+
+	db.New(dbPath)
+
 	wyd := &Wyd{}
 	ctx := kong.Parse(
 		wyd,
