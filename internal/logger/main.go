@@ -6,9 +6,18 @@ import (
 	lib "github.com/charmbracelet/log"
 )
 
-func New() *lib.Logger {
-	return lib.NewWithOptions(os.Stderr, lib.Options{
+func New(debug bool) *lib.Logger {
+	opts := lib.Options{
 		ReportTimestamp: false,
 		Prefix:          "wyd",
-	})
+		Level:           lib.DebugLevel,
+	}
+
+	log := lib.NewWithOptions(os.Stderr, opts)
+
+	if debug {
+		lib.SetLevel(lib.DebugLevel)
+	}
+
+	return log
 }

@@ -7,8 +7,9 @@ import (
 )
 
 type Globals struct {
-	DbPath  string           `short:"d" help:"set the path for the sqlite database" type:"path" default:"${db_file}" placeholder:"test.db"`
+	DbPath  string           `short:"f" help:"set the path for the sqlite database" type:"path" default:"${db_file}" placeholder:"test.db"`
 	Version kong.VersionFlag `short:"v" help:"Print the version number"`
+	Debug   bool             `short:"d" help:"Turn on verbose logging"`
 }
 
 type Wyd struct {

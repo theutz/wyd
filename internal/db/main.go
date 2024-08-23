@@ -9,8 +9,8 @@ import (
 
 var db *sql.DB
 
-func New(file string) *sql.DB {
-	log := logger.New()
+func New(file string, debug bool) *sql.DB {
+	log := logger.New(debug)
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
 		log.Fatal(err)

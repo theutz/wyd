@@ -26,7 +26,7 @@ var (
 )
 
 func main() {
-	log := logger.New()
+	log := logger.New(false)
 
 	db_file, err := xdg.DataFile("wyd/wyd.db")
 	if err != nil {
