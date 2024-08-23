@@ -42,7 +42,7 @@ func main() {
 		kong.Description("Whatch'ya doin'?"),
 		kong.UsageOnError(),
 		kong.ConfigureHelp(kong.HelpOptions{
-			Compact:             true,
+			Compact:             false,
 			Summary:             false,
 			NoExpandSubcommands: true,
 		}),
