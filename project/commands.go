@@ -1,6 +1,10 @@
 package project
 
-import "github.com/charmbracelet/log"
+import (
+	"database/sql"
+
+	"github.com/charmbracelet/log"
+)
 
 type ProjectCmd struct {
 	Add    AddCmd    `cmd:"" help:"add a project"`
@@ -8,13 +12,14 @@ type ProjectCmd struct {
 	Remove RemoveCmd `cmd:"" help:"remove a project"`
 }
 
-func (cmd *ProjectCmd) Run(log *log.Logger) error {
+func (cmd *ProjectCmd) Run() error {
+	// db, err := db.Open()
 	return nil
 }
 
 type AddCmd struct{}
 
-func (cmd *AddCmd) Run() error {
+func (cmd *AddCmd) Run(l *log.Logger, db *sql.DB) error {
 	return nil
 }
 

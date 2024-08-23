@@ -10,6 +10,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/exit"
 )
 
@@ -53,6 +54,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
+	db := db.New(db_file, logger)
 
 	if Version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
@@ -81,8 +83,9 @@ func main() {
 			"version": version,
 			"db_file": db_file,
 		},
-		kong.Bind(logger))
-	if err := ctx.Run(); err != nil {
+		kong.Bind(logger),
+		kong.Bind(db))
+	if err := ctx.Run(wyd); err != nil {
 		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {
 			os.Exit(exit.StatusAborted)
 		}

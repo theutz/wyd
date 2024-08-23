@@ -3,17 +3,16 @@ package db
 import (
 	"database/sql"
 
+	"github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/theutz/wyd/internal/logger"
 )
 
 var db *sql.DB
 
-func New(file string, debug bool) *sql.DB {
-	log := logger.New(debug)
+func New(file string, l *log.Logger) *sql.DB {
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err)
 	}
 	return db
 }
