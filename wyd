@@ -1,0 +1,92 @@
+#!/usr/bin/env -S just --working-directory . --justfile
+
+set shell := ['zsh', '-euo', 'pipefail', '-c']
+set script-interpreter := ['zsh', '-euo', 'pipefail']
+set positional-arguments
+set quiet
+set unstable
+
+export JUST_CHOOSER := "gum filter"
+export this := justfile()
+export db_file := "db.sqlite"
+export DEBUG := 'true'
+
+[private]
+default:
+  {{this}} --choose
+
+[private]
+db*open:
+  sqlite3 {{db_file}}
+
+# add a new project
+[script, no-exit-message]
+project-add $name="" $url="":
+  [[ -z $name ]] && gum input --header "Project name" | read name
+  [[ -z $url ]] && gum input --header "Zoho Projects URL" | read url
+  sqlite3 -csv -header {{db_file}} 'select id,name from clients;' |
+    gum table -w 3,50 | cut -d ',' -f 1 | read client_id
+  sqlite3 {{db_file}} <<-EOF
+    INSERT INTO projects (name,url,client_id)
+    VALUES ('$name','$url',$client_id);
+  EOF
+
+
+# list all projects
+[script, no-exit-message]
+project-list:
+  sqlite3 -csv -header {{db_file}} <<-EOF | gum table -w 3,30
+    SELECT id,name
+    FROM projects;
+  EOF
+
+# delete a project
+[script, no-exit-message]
+project-delete:
+  csv=$(sqlite3 -csv -header {{db_file}} 'SELECT id,name FROM projects')
+
+  if [[ -z $csv ]]; then
+    gum log -l warn 'No projects remaining.'
+    exit 1
+  fi
+
+  export id=$(<<< $csv gum table -w 3,30 | cut -d, -f1)
+  name=$(<<< $csv yq -p=csv 'filter(.id == env(id))[0].name')
+
+  [[ -n $DEBUG ]] && gum log -l debug -s "Deleting project" id $id name $name
+
+  sqlite3 {{db_file}} "DELETE FROM projects WHERE id = $id"
+  gum log -l info -s "Project deleted" id $id name $name
+
+  [[ -n $DEBUG ]] && (sqlite3 -markdown -header {{db_file}} 'SELECT * from projects' | gum format)
+
+# add a new client
+client-add:
+  #!/usr/bin/env zsh
+  set -euo pipefail
+  gum input --header "Client name" | read name
+  gum log -l info -s "Adding client" name $name
+  sqlite3 {{db_file}} <<-EOF
+    INSERT INTO clients (name)
+    VALUES('$name');
+  EOF
+
+# list clients
+[script, no-exit-message]
+client-list:
+  sqlite3 -markdown {{db_file}} <<-EOF | gum format
+    SELECT *
+    FROM clients;
+  EOF
+
+# Delete a client
+[script, no-exit-message]
+client-delete:
+  sqlite3 -csv -header {{db_file}} "SELECT id,name FROM clients;" |
+    gum table --widths 3,30 |
+    cut -d, -f 1 |
+    read id
+  sqlite3 {{db_file}} <<-EOF
+  delete from clients where id = $id;
+  EOF
+  echo $id
