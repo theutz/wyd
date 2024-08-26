@@ -10,9 +10,9 @@ import (
 
 type ListCmd struct{}
 
-func (cmd *ListCmd) Run(log *clog.Logger, q *queries.Queries) error {
+func (cmd *ListCmd) Run(log *clog.Logger, q *queries.Queries, ctx *context.Context) error {
 	log.Debug("listing clients")
-	clients, err := q.ListClients(context.Background())
+	clients, err := q.ListClients(*ctx)
 	if err != nil {
 		log.Fatal(err)
 	}

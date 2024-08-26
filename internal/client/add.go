@@ -12,7 +12,7 @@ type AddCmd struct {
 	Name string `short:"n" help:"client name"`
 }
 
-func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
+func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries, ctx *context.Context) error {
 	log.Debug("adding client")
 	name := cmd.Name
 	log.Debug("flag", "name", name)
@@ -25,7 +25,7 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 	}
 	log.Debug("input", "name", name)
 
-	_, err := q.CreateClient(context.Background(), name)
+	_, err := q.CreateClient(*ctx, name)
 	if err != nil {
 		log.Fatal(err)
 	}

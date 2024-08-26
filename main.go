@@ -29,6 +29,8 @@ var (
 	// CommitSHA contains the SHA of the commit that this application was built
 	// against. It's set via ldflags when building.
 	CommitSHA = ""
+
+	dbctx = context.Background()
 )
 
 type debugLevel int
@@ -75,7 +77,7 @@ func main() {
 	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := db.ExecContext(context.Background(), ddl); err != nil {
+	if _, err := db.ExecContext(dbctx, ddl); err != nil {
 		log.Fatal(err)
 	}
 	goose.SetBaseFS(embedMigrations)
@@ -115,7 +117,8 @@ func main() {
 			"db_file": db_file,
 		},
 		kong.Bind(logger),
-		kong.Bind(q))
+		kong.Bind(q),
+		kong.Bind(&dbctx))
 	if err := ctx.Run(wyd); err != nil {
 		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {
 			os.Exit(exit.StatusAborted)
