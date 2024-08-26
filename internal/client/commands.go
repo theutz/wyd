@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/charmbracelet/huh"
 	clog "github.com/charmbracelet/log"
@@ -29,6 +30,7 @@ type AddCmd struct {
 }
 
 func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
+	log.Debug("adding client")
 	name := cmd.Name
 	log.Debug("flag", "name", name)
 
@@ -50,7 +52,13 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 
 type ListCmd struct{}
 
-func (cmd *ListCmd) Run() error {
+func (cmd *ListCmd) Run(log *clog.Logger, q *queries.Queries) error {
+	log.Debug("listing clients")
+	clients, err := q.ListClients(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(clients)
 	return nil
 }
 
