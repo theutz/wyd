@@ -34,7 +34,7 @@ build-watch *args:
 # run the project
 [group('dev')]
 run *args: db-generate
-  go run -v ./... "$@"
+  go run -v ./... --debug-level 2 $@
 
 # run the project on every change
 [group('dev')]

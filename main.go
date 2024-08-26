@@ -66,7 +66,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	db, err := sql.Open("sqlite3", db_file)
+	db, err := sql.Open("sqlite3", db_file+";foreign keys=true")
 	if _, err := db.ExecContext(qctx, ddl); err != nil {
 		log.Fatal(err)
 	}

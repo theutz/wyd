@@ -1,20 +1,5 @@
 package client
 
-import (
-	"context"
-	"fmt"
-
-	"github.com/charmbracelet/huh"
-	clog "github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/queries"
-	"gorm.io/gorm"
-)
-
-type Client struct {
-	gorm.Model
-	Name string `gorm:"unique,not null"`
-}
-
 type ClientCmd struct {
 	Add    AddCmd    `cmd:"" help:"add a client"`
 	List   ListCmd   `cmd:"" help:"list clients"`
@@ -22,48 +7,5 @@ type ClientCmd struct {
 }
 
 func (cmd *ClientCmd) Run() error {
-	return nil
-}
-
-type AddCmd struct {
-	Name string `short:"n" help:"client name"`
-}
-
-func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
-	log.Debug("adding client")
-	name := cmd.Name
-	log.Debug("flag", "name", name)
-
-	if name == "" {
-		err := huh.NewInput().Title("Name").Inline(true).Value(&name).Run()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	log.Debug("input", "name", name)
-
-	_, err := q.CreateClient(context.Background(), name)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return nil
-}
-
-type ListCmd struct{}
-
-func (cmd *ListCmd) Run(log *clog.Logger, q *queries.Queries) error {
-	log.Debug("listing clients")
-	clients, err := q.ListClients(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(clients)
-	return nil
-}
-
-type RemoveCmd struct{}
-
-func (cmd *RemoveCmd) Run() error {
 	return nil
 }
