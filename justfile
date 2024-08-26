@@ -20,10 +20,27 @@ default:
 setup:
   bash setup.sh
 
-# run the package every time a change is made
+# build the project 
+build:
+  go build .
+
+# build the package with every change
 [group('dev')]
-watch *flags:
+build-watch *flags:
   watchexec -- go run -v ./... "$@"
+
+# run the project
+[group('dev')]
+run *args:
+  go run -v ./... "$@"
+
+# run the project on every change
+run-watch *args:
+  watchexec -- just run "$@"
+
+[group('dev')]
+up:
+  overmind start
 
 # Open the sqlite console
 [group('db')]
@@ -43,6 +60,20 @@ db-create-if-not-exists:
     sqlite3 "{{db_file}}" "VACUUM;"
   fi
   gum log -l info -s "db exists" file "{{db_file}}"
+
+# Generate go code from queries
+[script, group('db')]
+db-generate:
+  if sqlc generate; then
+    gum log -l info "New queries generated"
+  else
+    gum log -l error "Error while generating queries"
+  fi
+
+# Watch for changes and regenerate files
+[script, group('db')]
+db-generate-watch:
+  watchexec -w db -w sqlc.yml "just db-generate"
 
 # Migrate the database
 [group('db'), group('migrate')]

@@ -13,6 +13,8 @@ asdf plugin add sqlc https://github.com/dylanrayboss/asdf-sqlc.git
 asdf plugin add goose https://github.com/samhvw8/asdf-goose.git
 asdf plugin add gum https://github.com/lwiechec/asdf-gum.git
 asdf plugin add sqlite https://github.com/cLupus/asdf-sqlite.git
+asdf plugin add watchexec https://github.com/nyrst/asdf-watchexec.git
+asdf plugin-add overmind https://github.com/virtualstaticvoid/asdf-overmind.git
 
 asdf install
 
