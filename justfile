@@ -47,8 +47,8 @@ up:
 
 # Open the sqlite console
 [group('db')]
-db-console: db-create-if-not-exists
-  sqlite3 "{{db_file}}"
+db-console *args: db-create-if-not-exists
+  sqlite3 "{{db_file}}" $@
 
 alias db := db-console
 

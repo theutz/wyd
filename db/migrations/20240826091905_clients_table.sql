@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS clients (
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query';
-DROP TABLE clients;
+DROP TABLE IF EXISTS clients;
 -- +goose StatementEnd

@@ -2,8 +2,6 @@ package project
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"strconv"
 
 	"github.com/charmbracelet/huh"
@@ -11,35 +9,21 @@ import (
 	"github.com/theutz/wyd/internal/queries"
 )
 
-type clientId string
-
-func validateClientId[T interface{ ~string }](c T) error {
-	s, ok := any(c).(string)
-	if !ok {
-		return errors.New("client id is not a valid string")
-	}
-	if _, err := strconv.Atoi(s); err != nil {
-		return errors.New("client id must be an integer")
-	}
-	return nil
-}
-
-func (c *clientId) Validate() error {
-	return validateClientId(*c)
-}
-
 type AddCmd struct {
-	Name     string   `short:"n" help:"the name of the package"`
-	ClientId clientId `short:"c" help:"the client id"`
+	Name     string `short:"n" help:"the name of the package"`
+	ClientId int    `xor:"client" help:"the client id (can't be used with --client)"`
+	Client   string `short:"c" xor:"client" help:"the name of the client (can't be used with --client-id)"`
 }
 
 func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 	log.Debug("adding project")
 	log.Debug("flag", "name", cmd.Name)
 	log.Debug("flag", "clientId", cmd.ClientId)
+	log.Debug("flag", "client", cmd.Client)
 
 	p := queries.CreateProjectParams{
-		Name: cmd.Name,
+		Name:     cmd.Name,
+		ClientID: int64(cmd.ClientId),
 	}
 
 	if cmd.Name == "" {
@@ -53,11 +37,10 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 		log.Debug("input", "name", p.Name)
 	}
 
-	if cmd.ClientId == "" {
+	if cmd.ClientId == 0 {
 		var clientId string
 		err := huh.NewInput().
 			Title("Client ID").
-			Validate(validateClientId).
 			Value(&clientId).
 			Run()
 		log.Debug("input", "clientId", clientId)
@@ -68,15 +51,16 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 		if err != nil {
 			log.Fatal(err)
 		}
-		p.ClientID = sql.NullInt64{Int64: val}
+		p.ClientID = val
 	}
 
+	log.Debug("creating project", "params", p)
 	project, err := q.CreateProject(context.Background(), p)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Info("project created", "name", project.Name, "client id", project.ClientID)
+	log.Info("project created", "project", project)
 
 	// var clients []client.Client
 	//
