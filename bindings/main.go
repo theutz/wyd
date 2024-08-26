@@ -73,6 +73,15 @@ func (b *Bindings) initDb() {
 
 func (b *Bindings) initMigrations(fs embed.FS) {
 	goose.SetBaseFS(fs)
+	goose.SetLogger(goose.NopLogger())
+	switch b.DebugLevel {
+	case 1:
+		goose.SetLogger(b.Logger)
+		fallthrough
+	case 2:
+		goose.SetVerbose(true)
+		goose.SetLogger(goose.NopLogger())
+	}
 
 	if err := goose.SetDialect("sqlite"); err != nil {
 		log.Fatal(err)
