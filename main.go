@@ -1,22 +1,16 @@
 package main
 
 import (
-	"context"
-	"database/sql"
-	"embed"
 	"errors"
 	"fmt"
 	"os"
 	"runtime/debug"
 
-	"github.com/adrg/xdg"
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/pressly/goose/v3"
 	"github.com/theutz/wyd/internal/exit"
-	"github.com/theutz/wyd/internal/queries"
 )
 
 const shaLen = 7
@@ -29,8 +23,6 @@ var (
 	// CommitSHA contains the SHA of the commit that this application was built
 	// against. It's set via ldflags when building.
 	CommitSHA = ""
-
-	dbctx = context.Background()
 )
 
 type debugLevel int
@@ -52,43 +44,7 @@ func (d debugLevel) AfterApply(logger *log.Logger) error {
 	return nil
 }
 
-var (
-	ddl string
-	//go:embed db/migrations/*.sql
-	embedMigrations embed.FS
-)
-
 func main() {
-	logger := log.New(os.Stderr)
-	logger.SetPrefix("wyd")
-	logger.SetLevel(log.WarnLevel)
-
-	db_file, err := xdg.DataFile("wyd/wyd.db")
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	db, err := sql.Open("sqlite3", db_file)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
-		log.Fatal(err)
-	}
-	if _, err := db.ExecContext(dbctx, ddl); err != nil {
-		log.Fatal(err)
-	}
-	goose.SetBaseFS(embedMigrations)
-	if err := goose.SetDialect("sqlite"); err != nil {
-		log.Fatal(err)
-	}
-	if err := goose.Up(db, "db/migrations"); err != nil {
-		log.Fatal(err)
-	}
-	q := queries.New(db)
-
 	if Version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
 			Version = info.Main.Version
@@ -101,6 +57,9 @@ func main() {
 	if len(CommitSHA) >= shaLen {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
+
+	c, db := initContext()
+	defer db.Close()
 
 	wyd := &Wyd{}
 	ctx := kong.Parse(
@@ -116,14 +75,15 @@ func main() {
 			"version": version,
 			"db_file": db_file,
 		},
-		kong.Bind(logger),
-		kong.Bind(q),
-		kong.Bind(&dbctx))
+		kong.Bind(c))
+
 	if err := ctx.Run(wyd); err != nil {
-		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {
+		if errors.Is(err, exit.ErrAborted) ||
+			errors.Is(err, huh.ErrUserAborted) {
+			c.Logger.Warn(err)
 			os.Exit(exit.StatusAborted)
 		}
-		fmt.Println(err)
+		c.Logger.Error(err)
 		os.Exit(1)
 	}
 }
