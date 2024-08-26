@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"database/sql"
+	"embed"
 	"errors"
 	"fmt"
 	"os"
@@ -10,8 +13,10 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/db"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/pressly/goose/v3"
 	"github.com/theutz/wyd/internal/exit"
+	"github.com/theutz/wyd/internal/queries"
 )
 
 const shaLen = 7
@@ -45,16 +50,35 @@ func (d debugLevel) AfterApply(logger *log.Logger) error {
 	return nil
 }
 
+var (
+	ddl string
+	//go:embed db/migrations/*.sql
+	embedMigrations embed.FS
+)
+
 func main() {
 	logger := log.New(os.Stderr)
 	logger.SetPrefix("wyd")
 	logger.SetLevel(log.WarnLevel)
 
+	qctx := context.Background()
 	db_file, err := xdg.DataFile("wyd/wyd.db")
 	if err != nil {
 		logger.Fatal(err)
 	}
-	db := db.New(db_file, logger)
+	db, err := sql.Open("sqlite3", db_file)
+	if _, err := db.ExecContext(qctx, ddl); err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	goose.SetBaseFS(embedMigrations)
+	if err := goose.SetDialect("sqlite"); err != nil {
+		log.Fatal(err)
+	}
+	if err := goose.Up(db, "db/migrations"); err != nil {
+		log.Fatal(err)
+	}
+	q := queries.New(db)
 
 	if Version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
@@ -84,7 +108,7 @@ func main() {
 			"db_file": db_file,
 		},
 		kong.Bind(logger),
-		kong.Bind(db))
+		kong.Bind(q))
 	if err := ctx.Run(wyd); err != nil {
 		if errors.Is(err, exit.ErrAborted) || errors.Is(err, huh.ErrUserAborted) {
 			os.Exit(exit.StatusAborted)

@@ -1,8 +1,11 @@
 package client
 
 import (
+	"context"
+
 	"github.com/charmbracelet/huh"
 	clog "github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/queries"
 	"gorm.io/gorm"
 )
 
@@ -21,24 +24,27 @@ func (cmd *ClientCmd) Run() error {
 	return nil
 }
 
-type AddCmd struct{}
+type AddCmd struct {
+	Name string `short:"n" help:"client name"`
+}
 
-func (cmd *AddCmd) Run(log *clog.Logger, db *gorm.DB) error {
-	var name string
+func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
+	name := cmd.Name
+	log.Debug("flag", "name", name)
 
-	form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewInput().Title("Name").Value(&name),
-		),
-	)
+	if name == "" {
+		err := huh.NewInput().Title("Name").Inline(true).Value(&name).Run()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	log.Debug("input", "name", name)
 
-	err := form.Run()
+	_, err := q.CreateClient(context.Background(), name)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("Input", "name", name)
 
-	db.Create(&Client{Name: name})
 	return nil
 }
 
