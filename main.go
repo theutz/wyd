@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"errors"
 	"fmt"
 	"os"
@@ -8,8 +9,8 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/theutz/wyd/internal/bindings"
 	"github.com/theutz/wyd/internal/exit"
 )
 
@@ -25,24 +26,8 @@ var (
 	CommitSHA = ""
 )
 
-type debugLevel int
-
-func (d debugLevel) AfterApply(logger *log.Logger) error {
-	var l log.Level
-
-	switch d {
-	case 1:
-		l = log.InfoLevel
-	case 2:
-		l = log.DebugLevel
-	default:
-		l = log.WarnLevel
-	}
-
-	logger.SetLevel(l)
-
-	return nil
-}
+//go:embed db/migrations/*.sql
+var embedMigrations embed.FS
 
 func main() {
 	if Version == "" {
@@ -58,8 +43,8 @@ func main() {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
 
-	c, db := initContext()
-	defer db.Close()
+	c := bindings.Init(embedMigrations)
+	defer c.Db.Close()
 
 	wyd := &Wyd{}
 	ctx := kong.Parse(
@@ -73,7 +58,7 @@ func main() {
 		}),
 		kong.Vars{
 			"version": version,
-			"db_file": db_file,
+			"db_file": c.DbFile,
 		},
 		kong.Bind(c))
 

@@ -1,33 +1,34 @@
 package client
 
 import (
-	"context"
-
 	"github.com/charmbracelet/huh"
-	clog "github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/queries"
+	"github.com/theutz/wyd/internal/bindings"
 )
 
 type AddCmd struct {
 	Name string `short:"n" help:"client name"`
 }
 
-func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries, ctx *context.Context) error {
-	log.Debug("adding client")
+func (cmd *AddCmd) Run(b bindings.Bindings) error {
+	b.Logger.Debug("adding client")
 	name := cmd.Name
-	log.Debug("flag", "name", name)
+	b.Logger.Debug("flag", "name", name)
 
 	if name == "" {
-		err := huh.NewInput().Title("Name").Inline(true).Value(&name).Run()
+		err := huh.NewInput().
+			Title("Name").
+			Inline(true).
+			Value(&name).
+			Run()
 		if err != nil {
-			log.Fatal(err)
+			b.Logger.Fatal(err)
 		}
 	}
-	log.Debug("input", "name", name)
+	b.Logger.Debug("input", "name", name)
 
-	_, err := q.CreateClient(*ctx, name)
+	_, err := b.Queries.CreateClient(b.Context, name)
 	if err != nil {
-		log.Fatal(err)
+		b.Logger.Fatal(err)
 	}
 
 	return nil
