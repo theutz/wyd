@@ -2,7 +2,6 @@ package project
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/charmbracelet/huh"
 	clog "github.com/charmbracelet/log"
@@ -38,34 +37,38 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 	}
 
 	if params.ClientID == 0 {
-		var clientIdStr string
 		var clientId int64
 
 		if cmd.Client == "" {
+			log.Debug("loading clients")
 			clients, err := q.ListClients(context.Background())
+			log.Debug("loaded clients", "clients", clients)
+
+			log.Debug("converting clients to options")
 			var options []huh.Option[int64]
 			for _, c := range clients {
 				o := huh.NewOption[int64](c.Name, c.ID)
 				options = append(options, o)
 			}
+			log.Debug("converted clients to options", "options", options)
+
+			log.Debug("prompting for client")
 			err = huh.NewSelect[int64]().
 				Options(options...).
 				Value(&clientId).
 				Run()
-				// err := huh.NewInput().
-				// 	Title("Client ID").
-				// 	Value(&clientIdStr).
-				// 	Run()
 			if err != nil {
 				log.Fatal(err)
 			}
-			log.Debug("input", "clientId", clientIdStr)
+			log.Debug("input", "clientId", clientId)
 		} else {
-			var err error
-			clientId, err = strconv.ParseInt(clientIdStr, 10, 64)
+			log.Debug("searching for client by name", "name", cmd.Client)
+			client, err := q.GetClientByName(context.Background(), cmd.Client)
 			if err != nil {
 				log.Fatal(err)
 			}
+			log.Debug("found", "client", client)
+			clientId = client.ID
 		}
 		params.ClientID = clientId
 	}
