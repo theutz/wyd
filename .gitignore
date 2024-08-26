@@ -1,3 +1,5 @@
 *.sqlite
 
 dist/
+wyd
+internal/queries

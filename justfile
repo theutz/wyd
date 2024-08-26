@@ -21,20 +21,23 @@ setup:
   bash setup.sh
 
 # build the project 
-build:
-  go build .
+build: db-generate
+  gum log -l info "building project"
+  go build -v ./...
 
 # build the package with every change
 [group('dev')]
-build-watch *flags:
-  watchexec -- go run -v ./... "$@"
+build-watch *args:
+  gum log -l info "starting build watcher"
+  watchexec -- just build "$@"
 
 # run the project
 [group('dev')]
-run *args:
+run *args: db-generate
   go run -v ./... "$@"
 
 # run the project on every change
+[group('dev')]
 run-watch *args:
   watchexec -- just run "$@"
 
@@ -65,9 +68,9 @@ db-create-if-not-exists:
 [script, group('db')]
 db-generate:
   if sqlc generate; then
-    gum log -l info "New queries generated"
+    gum log -l info "queries regenerated"
   else
-    gum log -l error "Error while generating queries"
+    gum log -l error "generating queries failed"
   fi
 
 # Watch for changes and regenerate files
