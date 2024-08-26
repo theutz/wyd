@@ -49,8 +49,6 @@ db-create-if-not-exists:
 migrate: db-create-if-not-exists
   goose up
 
-alias up := migrate
-
 # Create a migration file
 [group('db'), group('make'), group('migrate')]
 make-migration *name:
@@ -62,3 +60,8 @@ alias migrate-make := make-migration
 [group('db'), group('migrate')]
 migrate-status:
   goose status
+
+# Migrate all down
+[group('db'), group('migrate')]
+migrate-down:
+  goose down
