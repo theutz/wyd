@@ -47,22 +47,10 @@ up:
 
 # Open the sqlite console
 [group('db')]
-db-console *args: db-create-if-not-exists
-  sqlite3 "{{db_file}}" $@
+db-console *args:
+  sqlite3 "{{db_file}}" {{args}}
 
 alias db := db-console
-
-[group('db'), script, private]
-db-create-if-not-exists:
-  if [[ ! -d "{{db_dir}}" ]]; then
-    gum log -l info -s "making sqlite dir" dir "{{db_dir}}"
-    mkdir -p "{{db_dir}}"
-  fi
-  if [[ ! -f "{{db_file}}" ]]; then
-    gum log -l info -s "making empty sqlite db" file "{{db_file}}"
-    sqlite3 "{{db_file}}" "VACUUM;"
-  fi
-  gum log -l info -s "db exists" file "{{db_file}}"
 
 # Generate go code from queries
 [script, group('db')]
@@ -80,7 +68,7 @@ db-generate-watch:
 
 # Migrate the database
 [group('db'), group('migrate')]
-migrate: db-create-if-not-exists
+migrate:
   goose up
 
 # Create a migration file
@@ -95,7 +83,12 @@ alias migrate-make := make-migration
 migrate-status:
   goose status
 
-# Migrate all down
+# migrate all down
 [group('db'), group('migrate')]
 migrate-down:
   goose down
+
+# reset all migrations
+[group('db'), group('migrate')]
+migrate-reset:
+  goose reset

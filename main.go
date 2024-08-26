@@ -61,16 +61,23 @@ func main() {
 	logger.SetPrefix("wyd")
 	logger.SetLevel(log.WarnLevel)
 
-	qctx := context.Background()
 	db_file, err := xdg.DataFile("wyd/wyd.db")
 	if err != nil {
 		logger.Fatal(err)
 	}
-	db, err := sql.Open("sqlite3", db_file+";foreign keys=true")
-	if _, err := db.ExecContext(qctx, ddl); err != nil {
+
+	db, err := sql.Open("sqlite3", db_file)
+	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := db.ExecContext(context.Background(), ddl); err != nil {
+		log.Fatal(err)
+	}
 	goose.SetBaseFS(embedMigrations)
 	if err := goose.SetDialect("sqlite"); err != nil {
 		log.Fatal(err)

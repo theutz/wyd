@@ -21,7 +21,7 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 	log.Debug("flag", "clientId", cmd.ClientId)
 	log.Debug("flag", "client", cmd.Client)
 
-	p := queries.CreateProjectParams{
+	params := queries.CreateProjectParams{
 		Name:     cmd.Name,
 		ClientID: int64(cmd.ClientId),
 	}
@@ -29,37 +29,52 @@ func (cmd *AddCmd) Run(log *clog.Logger, q *queries.Queries) error {
 	if cmd.Name == "" {
 		err := huh.NewInput().
 			Title("Name").
-			Value(&p.Name).
+			Value(&params.Name).
 			Run()
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Debug("input", "name", p.Name)
+		log.Debug("input", "name", params.Name)
 	}
 
-	if cmd.ClientId == 0 {
-		var clientId string
-		err := huh.NewInput().
-			Title("Client ID").
-			Value(&clientId).
-			Run()
-		log.Debug("input", "clientId", clientId)
-		if err != nil {
-			log.Fatal(err)
+	if params.ClientID == 0 {
+		var clientIdStr string
+		var clientId int64
+
+		if cmd.Client == "" {
+			clients, err := q.ListClients(context.Background())
+			var options []huh.Option[int64]
+			for _, c := range clients {
+				o := huh.NewOption[int64](c.Name, c.ID)
+				options = append(options, o)
+			}
+			err = huh.NewSelect[int64]().
+				Options(options...).
+				Value(&clientId).
+				Run()
+				// err := huh.NewInput().
+				// 	Title("Client ID").
+				// 	Value(&clientIdStr).
+				// 	Run()
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Debug("input", "clientId", clientIdStr)
+		} else {
+			var err error
+			clientId, err = strconv.ParseInt(clientIdStr, 10, 64)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-		val, err := strconv.ParseInt(clientId, 10, 64)
-		if err != nil {
-			log.Fatal(err)
-		}
-		p.ClientID = val
+		params.ClientID = clientId
 	}
 
-	log.Debug("creating project", "params", p)
-	project, err := q.CreateProject(context.Background(), p)
+	log.Debug("creating project", "params", params)
+	project, err := q.CreateProject(context.Background(), params)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	log.Info("project created", "project", project)
 
 	// var clients []client.Client
