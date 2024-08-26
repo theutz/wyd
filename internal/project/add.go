@@ -3,7 +3,7 @@ package project
 import (
 	"github.com/charmbracelet/huh"
 	"github.com/theutz/wyd/internal/bindings"
-	"github.com/theutz/wyd/internal/queries"
+	"github.com/theutz/wyd/queries"
 )
 
 type AddCmd struct {

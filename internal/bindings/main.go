@@ -9,7 +9,7 @@ import (
 	"github.com/adrg/xdg"
 	"github.com/charmbracelet/log"
 	"github.com/pressly/goose/v3"
-	"github.com/theutz/wyd/internal/queries"
+	"github.com/theutz/wyd/queries"
 )
 
 type Bindings struct {
