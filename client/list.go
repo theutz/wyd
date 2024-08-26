@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 
-	"github.com/theutz/wyd/internal/bindings"
+	"github.com/theutz/wyd/bindings"
 )
 
 type ListCmd struct{}

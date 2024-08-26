@@ -10,7 +10,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/theutz/wyd/internal/bindings"
+	"github.com/theutz/wyd/bindings"
 	"github.com/theutz/wyd/internal/exit"
 )
 

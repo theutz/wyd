@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/alecthomas/kong"
-	"github.com/theutz/wyd/internal/bindings"
-	"github.com/theutz/wyd/internal/client"
-	"github.com/theutz/wyd/internal/project"
+	"github.com/theutz/wyd/bindings"
+	"github.com/theutz/wyd/client"
+	"github.com/theutz/wyd/project"
 )
 
 type Globals struct {

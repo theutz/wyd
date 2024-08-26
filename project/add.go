@@ -2,7 +2,7 @@ package project
 
 import (
 	"github.com/charmbracelet/huh"
-	"github.com/theutz/wyd/internal/bindings"
+	"github.com/theutz/wyd/bindings"
 	"github.com/theutz/wyd/queries"
 )
 
