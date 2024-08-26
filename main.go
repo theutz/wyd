@@ -26,7 +26,7 @@ var (
 	CommitSHA = ""
 )
 
-//go:embed db/migrations/*.sql
+//go:embed migrations/*.sql
 var embedMigrations embed.FS
 
 func main() {

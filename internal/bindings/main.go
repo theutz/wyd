@@ -78,7 +78,7 @@ func (b *Bindings) initMigrations(fs embed.FS) {
 		log.Fatal(err)
 	}
 
-	if err := goose.Up(b.Db, "db/migrations"); err != nil {
+	if err := goose.Up(b.Db, "migrations"); err != nil {
 		log.Fatal(err)
 	}
 }
