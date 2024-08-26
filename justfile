@@ -55,3 +55,10 @@ alias up := migrate
 [group('db'), group('make'), group('migrate')]
 make-migration *name:
   goose create "{{ snakecase(name) }}" sql
+
+alias migrate-make := make-migration
+
+# Check migration status
+[group('db'), group('migrate')]
+migrate-status:
+  goose status
