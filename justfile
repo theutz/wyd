@@ -33,7 +33,7 @@ up:
   process-compose
 
 # open the sqlite console
-[group('db')]
+[group('db'), no-exit-message]
 db *args:
   sqlite3 "$DB_FILE" {{args}}
 
