@@ -32,6 +32,11 @@ run *args: db-gen
 up:
   process-compose
 
+# run a command every time a file changes
+[group('dev')]
+watch +args:
+  watchexec -- just run $@
+
 # open the sqlite console
 [group('db'), no-exit-message]
 db *args:
