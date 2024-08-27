@@ -36,17 +36,7 @@ run *args: db-gen
 # run tasks for dev
 [group('dev')]
 up:
-  process-compose -D
-
-# shut down task watcher
-[group('dev')]
-down:
-  process-compose down
-
-# watch tasks for dev
-[group('dev')]
-dev: up
-  process-compose attach
+  process-compose
 
 # run a command every time a file changes
 [group('dev')]

@@ -1,22 +1,59 @@
 version: "0.5"
+is_strict: true
+anchors:
+  - &ready
+    ready_log_line: "[Command was successful]"
+  - &probe
+    initial_delay_seconds: 2
+    period_seconds: 3
+    success_threshold: 1
+    failure_threshold: 5
+  - &list
+    <<: *ready
+    is_tty: true
+    disabled: false
+    ready_log_line: "[Command was successful]"
+    liveness_probe: *probe
 
 processes:
-  clients:
-    command: watchexec -w . -w $$DB_FILE -- go run . clients list
-    is_tty: true
-    disabled: false
-  projects:
-    command: watchexec -w . -w $$DB_FILE -- go run . projects list
-    is_tty: true
-    disabled: false
-  tasks:
-    command: watchexec -w . -w $$DB_FILE -- go run . tasks list
-    is_tty: true
+  list-clients:
+    <<: *list
+    command: watchexec -w . -w $$DB_FILE -e go -c -- go run . clients list
+    namespace: clients
+    liveness_probe:
+      exec:
+        command: go run . clients list
+
+  list-projects:
+    <<: *list
+    command: watchexec -w . -w $$DB_FILE -e go -c -- go run . projects list
+    namespace: projects
+    liveness_probe:
+      exec:
+        command: go run . projects list
+
+  list-tasks:
+    <<: *list
+    command: watchexec -w . -w $$DB_FILE -e go -c -- go run . tasks list
+    namespace: tasks
+    liveness_probe:
+      exec:
+        command: go run . tasks list
+
   sqlc:
-    command: watchexec -w queries.sql -- sqlc generate
+    <<: *ready
+    command: watchexec -w internal/db/queries.sql -w internal/db/migrations -c -- sqlc generate
+
   just:
-    command: watchexec -w justfile -w 'just' -- just
-    disabled: false
+    <<: *ready
+    command: watchexec -c -- just
+    is_tty: true
+    liveness_probe:
+      <<: *probe
+      exec:
+        command: just --list
+
   test:
-    command: watchexec -w . -- go test ./...
-    disabled: false
+    <<: *ready
+    command: watchexec -c -- go test ./...
+    is_tty: true

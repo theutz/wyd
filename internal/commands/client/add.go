@@ -2,15 +2,24 @@ package client
 
 import (
 	"github.com/charmbracelet/huh"
-	"github.com/theutz/wyd/bindings"
+	"github.com/theutz/wyd/internal/db"
+	"github.com/theutz/wyd/internal/log"
+)
+
+var (
+	q   = db.Query
+	ctx = db.Ctx
 )
 
 type AddCmd struct {
 	Name string `short:"n" help:"client name"`
 }
 
-func (cmd *AddCmd) Run(b bindings.Bindings) error {
+func (cmd *AddCmd) Run() error {
+	l := log.Get()
+
 	l.Debug("adding client")
+
 	name := cmd.Name
 	l.Debug("flag", "name", name)
 
@@ -26,7 +35,7 @@ func (cmd *AddCmd) Run(b bindings.Bindings) error {
 	}
 	l.Debug("input", "name", name)
 
-	_, err := b.Queries.CreateClient(b.Context, name)
+	_, err := q.CreateClient(ctx, name)
 	if err != nil {
 		l.Fatal(err)
 	}

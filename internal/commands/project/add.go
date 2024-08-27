@@ -2,9 +2,8 @@ package project
 
 import (
 	"github.com/charmbracelet/huh"
-	clog "github.com/charmbracelet/log"
-	"github.com/theutz/wyd/bindings"
-	"github.com/theutz/wyd/queries"
+	"github.com/theutz/wyd/internal/db/queries"
+	"github.com/theutz/wyd/internal/log"
 )
 
 type AddCmd struct {
@@ -12,8 +11,6 @@ type AddCmd struct {
 	Client string `short:"c" help:"the name of the client"`
 	fields []huh.Field
 	params queries.CreateProjectParams
-	b      bindings.Bindings
-	l      clog.Logger
 }
 
 func (cmd *AddCmd) handleName() {
@@ -32,7 +29,7 @@ func (cmd *AddCmd) handleClient() {
 	if cmd.Client == "" {
 		l.Debug("client is empty. prompting for input.")
 		l.Debug("loading clients")
-		clients, err := cmd.b.Queries.ListClients(cmd.b.Context)
+		clients, err := q.ListClients(ctx)
 		if err != nil {
 			l.Fatal(err)
 		}
@@ -53,7 +50,7 @@ func (cmd *AddCmd) handleClient() {
 		cmd.fields = append(cmd.fields, client)
 	} else {
 		l.Debug("searching for client by name", "name", cmd.Client)
-		client, err := cmd.b.Queries.GetClientByName(cmd.b.Context, cmd.Client)
+		client, err := q.GetClientByName(ctx, cmd.Client)
 		if err != nil {
 			l.Fatal(err)
 		}
@@ -64,7 +61,7 @@ func (cmd *AddCmd) handleClient() {
 
 func (cmd *AddCmd) saveProject() {
 	l.Debug("creating project", "params", cmd.params)
-	project, err := cmd.b.Queries.CreateProject(cmd.b.Context, cmd.params)
+	project, err := q.CreateProject(ctx, cmd.params)
 	if err != nil {
 		l.Fatal(err)
 	}
@@ -83,8 +80,8 @@ func (cmd *AddCmd) runForm() {
 	}
 }
 
-func (cmd *AddCmd) Run(b bindings.Bindings) error {
-	cmd.b = b
+func (cmd *AddCmd) Run() error {
+	l := log.Get()
 
 	l.Debug("adding project")
 	l.Debug("flag", "name", cmd.Name)

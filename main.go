@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"errors"
 	"fmt"
 	"os"
@@ -10,7 +9,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/huh"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/theutz/wyd/bindings"
+	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/exit"
 	"github.com/theutz/wyd/internal/log"
 )
@@ -25,12 +24,9 @@ var (
 	// CommitSHA contains the SHA of the commit that this application was built
 	// against. It's set via ldflags when building.
 	CommitSHA = ""
-
-	l = log.Get()
 )
 
-//go:embed migrations/*.sql
-var embedMigrations embed.FS
+var l = log.Get()
 
 func main() {
 	if Version == "" {
@@ -46,8 +42,8 @@ func main() {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
 
-	c := bindings.Init(embedMigrations)
-	defer c.Db.Close()
+	conn := db.Init()
+	defer conn.Close()
 
 	wyd := &Wyd{}
 	ctx := kong.Parse(
@@ -61,9 +57,8 @@ func main() {
 		}),
 		kong.Vars{
 			"version": version,
-			"db_file": c.DbFile,
-		},
-		kong.Bind(c))
+			"db_file": db.DbFile,
+		})
 
 	if err := ctx.Run(wyd); err != nil {
 		if errors.Is(err, exit.ErrAborted) ||

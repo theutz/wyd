@@ -1,25 +1,19 @@
 package tasks
 
 import (
-	"context"
-
 	"github.com/charmbracelet/lipgloss/table"
-	"github.com/theutz/wyd/bindings"
+	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/log"
-	"github.com/theutz/wyd/queries"
 )
 
-type ListCmd struct {
-	q queries.Queries
-	c context.Context
-}
+type ListCmd struct{}
 
-func (cmd *ListCmd) Run(b bindings.Bindings) error {
+func (cmd *ListCmd) Run() error {
 	l := log.Get()
-	cmd.q = b.Queries
-	cmd.c = b.Context
+	q := db.Query
+	ctx := db.Ctx
 
-	tasks, err := cmd.q.ListTasks(cmd.c)
+	tasks, err := q.ListTasks(ctx)
 	if err != nil {
 		l.Fatal(err)
 	}
