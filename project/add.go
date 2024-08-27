@@ -9,76 +9,89 @@ import (
 type AddCmd struct {
 	Name   string `short:"n" help:"the name of the package"`
 	Client string `short:"c" help:"the name of the client"`
+	fields []huh.Field
+	params queries.CreateProjectParams
+	b      bindings.Bindings
 }
 
-func (cmd *AddCmd) Run(b bindings.Bindings) error {
-	b.Logger.Debug("adding project")
-	b.Logger.Debug("flag", "name", cmd.Name)
-	b.Logger.Debug("flag", "client", cmd.Client)
-
-	fields := []huh.Field{}
-
-	params := queries.CreateProjectParams{
-		Name: cmd.Name,
-	}
-
+func (cmd *AddCmd) handleName() {
 	if cmd.Name == "" {
 		name := huh.NewInput().
 			Title("Name").
-			Value(&params.Name)
-		b.Logger.Debug("name is empty. prompting for input", "field", name)
-		fields = append(fields, name)
+			Value(&cmd.params.Name)
+		cmd.b.Logger.Debug("name is empty. prompting for input", "field", name)
+		cmd.fields = append(cmd.fields, name)
+	} else {
+		cmd.params.Name = cmd.Name
 	}
+}
 
+func (cmd *AddCmd) handleClient() {
 	if cmd.Client == "" {
-		b.Logger.Debug("client is empty. prompting for input.")
-		b.Logger.Debug("loading clients")
-		clients, err := b.Queries.ListClients(b.Context)
+		cmd.b.Logger.Debug("client is empty. prompting for input.")
+		cmd.b.Logger.Debug("loading clients")
+		clients, err := cmd.b.Queries.ListClients(cmd.b.Context)
 		if err != nil {
-			b.Logger.Fatal(err)
+			cmd.b.Logger.Fatal(err)
 		}
-		b.Logger.Debug("loaded clients", "clients", clients)
+		cmd.b.Logger.Debug("loaded clients", "clients", clients)
 
-		b.Logger.Debug("converting clients to options")
+		cmd.b.Logger.Debug("converting clients to options")
 		var options []huh.Option[int64]
 		for _, c := range clients {
 			o := huh.NewOption[int64](c.Name, c.ID)
 			options = append(options, o)
 		}
-		b.Logger.Debug("converted clients to options", "options", options)
+		cmd.b.Logger.Debug("converted clients to options", "options", options)
 
 		client := huh.NewSelect[int64]().
 			Title("Client").
 			Options(options...).
-			Value(&params.ClientID)
-		b.Logger.Debug("field", "client", client)
-		fields = append(fields, client)
+			Value(&cmd.params.ClientID)
+		cmd.b.Logger.Debug("field", "client", client)
+		cmd.fields = append(cmd.fields, client)
 	} else {
-		b.Logger.Debug("searching for client by name", "name", cmd.Client)
-		client, err := b.Queries.GetClientByName(b.Context, cmd.Client)
+		cmd.b.Logger.Debug("searching for client by name", "name", cmd.Client)
+		client, err := cmd.b.Queries.GetClientByName(cmd.b.Context, cmd.Client)
 		if err != nil {
-			b.Logger.Fatal(err)
+			cmd.b.Logger.Fatal(err)
 		}
-		b.Logger.Debug("found", "client", client)
-		params.ClientID = client.ID
+		cmd.b.Logger.Debug("found", "client", client)
+		cmd.params.ClientID = client.ID
 	}
+}
 
-	if len(fields) > 0 {
+func (cmd *AddCmd) saveProject() {
+	cmd.b.Logger.Debug("creating project", "params", cmd.params)
+	project, err := cmd.b.Queries.CreateProject(cmd.b.Context, cmd.params)
+	if err != nil {
+		cmd.b.Logger.Fatal(err)
+	}
+	cmd.b.Logger.Info("project created", "project", project)
+}
+
+func (cmd *AddCmd) runForm() {
+	if len(cmd.fields) > 0 {
 		form := huh.NewForm(
-			huh.NewGroup(fields...),
+			huh.NewGroup(cmd.fields...),
 		)
 		err := form.Run()
 		if err != nil {
-			b.Logger.Fatal(err)
+			cmd.b.Logger.Fatal(err)
 		}
 	}
+}
 
-	b.Logger.Debug("creating project", "params", params)
-	project, err := b.Queries.CreateProject(b.Context, params)
-	if err != nil {
-		b.Logger.Fatal(err)
-	}
-	b.Logger.Info("project created", "project", project)
+func (cmd *AddCmd) Run(b bindings.Bindings) error {
+	cmd.b = b
+	b.Logger.Debug("adding project")
+	b.Logger.Debug("flag", "name", cmd.Name)
+	b.Logger.Debug("flag", "client", cmd.Client)
+
+	cmd.handleName()
+	cmd.handleClient()
+	cmd.runForm()
+	cmd.saveProject()
 
 	return nil
 }
