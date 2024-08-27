@@ -2,93 +2,68 @@ set positional-arguments
 set unstable
 set shell := ['zsh', '-euo', 'pipefail', '-c']
 set script-interpreter := ['zsh', '-euo', 'pipefail']
-
-db_dir := env('XDG_DATA_HOME', data_dir())
-export db_file := db_dir / "wyd/wyd.db"
-MIGRATION_DIR := justfile_dir() / "db/migrations"
-
-export GOOSE_DRIVER := "sqlite3"
-export GOOSE_DBSTRING := db_file
-export GOOSE_MIGRATION_DIR := MIGRATION_DIR
+set dotenv-load
 
 [private]
 default:
   just --list
 
-# Run the setup script
+# run the setup script
 [group('dev')]
 setup:
   bash setup.sh
 
 # build the project 
-build: db-generate
+[group('dev')]
+build: db-gen
   gum log -l info "building project"
   go build -v ./...
 
-# build the package with every change
-[group('dev')]
-build-watch *args:
-  gum log -l info "starting build watcher"
-  watchexec -- just build "$@"
-
 # run the project
 [group('dev')]
-run *args: db-generate
+run *args: db-gen
   go run -v ./... --debug-level 2 $@
 
-# run the project on every change
-[group('dev')]
-watch *args:
-  watchexec -w . -w {{db_file}} -- just run "$@"
-
+# watch tasks for dev
 [group('dev')]
 up:
   process-compose
 
-# Open the sqlite console
+# open the sqlite console
 [group('db')]
-db-console *args:
-  sqlite3 "{{db_file}}" {{args}}
-
-alias db := db-console
+db *args:
+  sqlite3 "$DB_FILE" {{args}}
 
 # Generate go code from queries
 [script, group('db')]
-db-generate:
+db-gen:
   if sqlc generate; then
     gum log -l info "queries regenerated"
   else
     gum log -l error "generating queries failed"
   fi
 
-# Watch for changes and regenerate files
-[script, group('db')]
-db-generate-watch:
-  watchexec -w db -w sqlc.yml "just db-generate"
-
-# Migrate the database
-[group('db'), group('migrate')]
-migrate:
+# migrate the database
+[group('migrate')]
+migrate-up:
   goose up
 
-# Create a migration file
-[group('db'), group('make'), group('migrate')]
-make-migration *name:
+# create a migration file
+[group('migrate')]
+migrate-create *name:
   goose create "{{ snakecase(name) }}" sql
 
-alias migrate-make := make-migration
-
-# Check migration status
-[group('db'), group('migrate')]
+# check migration status
+[group('migrate')]
 migrate-status:
   goose status
 
 # migrate all down
-[group('db'), group('migrate')]
+[group('migrate')]
 migrate-down:
   goose down
 
 # reset all migrations
-[group('db'), group('migrate')]
+[group('migrate')]
 migrate-reset:
   goose reset

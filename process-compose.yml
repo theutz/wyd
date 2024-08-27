@@ -2,10 +2,12 @@ version: "0.5"
 
 processes:
   clients:
-    command: watchexec -w . -w $$db_file -- go run . clients list
+    command: watchexec -w . -w $$DB_FILE -- go run . clients list
   projects:
-    command: watchexec -w . -w $$db_file -- go run . projects list
+    command: watchexec -w . -w $$DB_FILE -- go run . projects list
   tasks:
-    command: watchexec -w . -w $$db_file -- go run . tasks list
+    command: watchexec -w . -w $$DB_FILE -- go run . tasks list
   sqlc:
     command: watchexec -w queries.sql -- sqlc generate
+  just:
+    command: watchexec -w justfile -w 'just' -- just --list --list-submodules
