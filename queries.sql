@@ -17,4 +17,7 @@ VALUES (?, ?)
 RETURNING *;
 
 -- name: ListProjects :many
-SELECT * from projects;
+SELECT p.*, c.name AS client_name
+FROM projects AS p
+INNER JOIN clients AS c
+ON c.id = p.client_id;

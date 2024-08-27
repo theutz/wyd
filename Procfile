@@ -1,2 +1,1 @@
-sqlc: just db-generate-watch
-help: just run-watch --help
+sqlc: watchexec -w queries.sql -w migrations -- sqlc generate

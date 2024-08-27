@@ -38,8 +38,8 @@ run *args: db-generate
 
 # run the project on every change
 [group('dev')]
-run-watch *args:
-  watchexec -- just run "$@"
+watch *args:
+  watchexec -w . -w {{db_file}} -- just run "$@"
 
 [group('dev')]
 up:

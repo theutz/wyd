@@ -2,7 +2,6 @@ package project
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/theutz/wyd/bindings"
@@ -22,7 +21,7 @@ func (cmd *ListCmd) Run(b bindings.Bindings) error {
 		Headers("Name", "Client")
 
 	for _, project := range projects {
-		t.Row(project.Name, strconv.Itoa(int(project.ClientID)))
+		t.Row(project.Name, project.ClientName)
 	}
 
 	fmt.Println(t)

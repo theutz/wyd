@@ -81,19 +81,34 @@ func (q *Queries) ListClients(ctx context.Context) ([]Client, error) {
 }
 
 const listProjects = `-- name: ListProjects :many
-SELECT id, name, client_id from projects
+SELECT p.id, p.name, p.client_id, c.name AS client_name
+FROM projects AS p
+INNER JOIN clients AS c
+ON c.id = p.client_id
 `
 
-func (q *Queries) ListProjects(ctx context.Context) ([]Project, error) {
+type ListProjectsRow struct {
+	ID         int64
+	Name       string
+	ClientID   int64
+	ClientName string
+}
+
+func (q *Queries) ListProjects(ctx context.Context) ([]ListProjectsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listProjects)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Project
+	var items []ListProjectsRow
 	for rows.Next() {
-		var i Project
-		if err := rows.Scan(&i.ID, &i.Name, &i.ClientID); err != nil {
+		var i ListProjectsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ClientID,
+			&i.ClientName,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
