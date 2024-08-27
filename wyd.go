@@ -5,6 +5,7 @@ import (
 	"github.com/theutz/wyd/bindings"
 	"github.com/theutz/wyd/client"
 	"github.com/theutz/wyd/project"
+	"github.com/theutz/wyd/tasks"
 )
 
 type Globals struct {
@@ -16,5 +17,6 @@ type Wyd struct {
 	Version kong.VersionFlag   `short:"v" help:"Print the version number"`
 	Client  client.ClientCmd   `cmd:"" help:"work with clients" aliases:"clients,c"`
 	Project project.ProjectCmd `cmd:"" help:"work with projects" aliases:"projects,p"`
+	Task    tasks.TaskCmd      `cmd:"" help:"work with tasks" aliases:"tasks,t"`
 	Globals
 }

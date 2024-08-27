@@ -21,3 +21,9 @@ SELECT p.*, c.name AS client_name
 FROM projects AS p
 INNER JOIN clients AS c
 ON c.id = p.client_id;
+
+-- name: ListTasks :many
+SELECT t.name, p.name AS project_name
+FROM tasks AS t
+INNER JOIN projects AS p
+on p.id = t.project_id;

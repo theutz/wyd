@@ -121,3 +121,38 @@ func (q *Queries) ListProjects(ctx context.Context) ([]ListProjectsRow, error) {
 	}
 	return items, nil
 }
+
+const listTasks = `-- name: ListTasks :many
+SELECT t.name, p.name AS project_name
+FROM tasks AS t
+INNER JOIN projects AS p
+on p.id = t.project_id
+`
+
+type ListTasksRow struct {
+	Name        string
+	ProjectName string
+}
+
+func (q *Queries) ListTasks(ctx context.Context) ([]ListTasksRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTasks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTasksRow
+	for rows.Next() {
+		var i ListTasksRow
+		if err := rows.Scan(&i.Name, &i.ProjectName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

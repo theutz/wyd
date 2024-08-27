@@ -14,3 +14,9 @@ type Project struct {
 	Name     string
 	ClientID int64
 }
+
+type Task struct {
+	ID        int64
+	Name      string
+	ProjectID int64
+}
