@@ -16,3 +16,6 @@ processes:
   just:
     command: watchexec -w justfile -w 'just' -- just
     is_tty: true
+  test:
+    command: watchexec -w . -- go test ./...
+    is_tty: true
