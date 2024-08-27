@@ -14,7 +14,6 @@ anchors:
     disabled: false
     ready_log_line: "[Command was successful]"
     liveness_probe: *probe
-
 processes:
   list-clients:
     <<: *list
@@ -23,7 +22,6 @@ processes:
     liveness_probe:
       exec:
         command: go run . clients list
-
   list-projects:
     <<: *list
     command: watchexec -w . -w $$DB_FILE -e go -c -- go run . projects list
@@ -31,7 +29,6 @@ processes:
     liveness_probe:
       exec:
         command: go run . projects list
-
   list-tasks:
     <<: *list
     command: watchexec -w . -w $$DB_FILE -e go -c -- go run . tasks list
@@ -39,11 +36,9 @@ processes:
     liveness_probe:
       exec:
         command: go run . tasks list
-
   sqlc:
     <<: *ready
     command: watchexec -w internal/db/queries.sql -w internal/db/migrations -c -- sqlc generate
-
   just:
     <<: *ready
     command: watchexec -c -- just
@@ -52,8 +47,9 @@ processes:
       <<: *probe
       exec:
         command: just --list
-
   test:
     <<: *ready
     command: watchexec -c -- go test ./...
     is_tty: true
+# vim: fdl=1
+
