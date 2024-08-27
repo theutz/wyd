@@ -6,3 +6,4 @@ gum 0.14.4
 sqlite 3.46.1
 watchexec 2.1.2
 overmind 2.5.1
+process-compose 1.24.2

@@ -4,7 +4,7 @@ set shell := ['zsh', '-euo', 'pipefail', '-c']
 set script-interpreter := ['zsh', '-euo', 'pipefail']
 
 db_dir := env('XDG_DATA_HOME', data_dir())
-db_file := db_dir / "wyd/wyd.db"
+export db_file := db_dir / "wyd/wyd.db"
 MIGRATION_DIR := justfile_dir() / "db/migrations"
 
 export GOOSE_DRIVER := "sqlite3"
@@ -43,7 +43,7 @@ watch *args:
 
 [group('dev')]
 up:
-  overmind start
+  process-compose
 
 # Open the sqlite console
 [group('db')]

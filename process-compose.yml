@@ -1,0 +1,11 @@
+version: "0.5"
+
+processes:
+  clients:
+    command: watchexec -w . -w $$db_file -- go run . clients list
+  projects:
+    command: watchexec -w . -w $$db_file -- go run . projects list
+  tasks:
+    command: watchexec -w . -w $$db_file -- go run . tasks list
+  sqlc:
+    command: watchexec -w queries.sql -- sqlc generate
