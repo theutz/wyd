@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/alecthomas/kong"
 	"github.com/theutz/wyd/bindings"
-	"github.com/theutz/wyd/client"
-	"github.com/theutz/wyd/project"
-	"github.com/theutz/wyd/tasks"
+	"github.com/theutz/wyd/commands/client"
+	"github.com/theutz/wyd/commands/project"
+	"github.com/theutz/wyd/commands/tasks"
 )
 
 type Globals struct {
