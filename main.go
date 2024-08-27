@@ -12,6 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/theutz/wyd/bindings"
 	"github.com/theutz/wyd/internal/exit"
+	"github.com/theutz/wyd/internal/log"
 )
 
 const shaLen = 7
@@ -24,6 +25,8 @@ var (
 	// CommitSHA contains the SHA of the commit that this application was built
 	// against. It's set via ldflags when building.
 	CommitSHA = ""
+
+	l = log.Get()
 )
 
 //go:embed migrations/*.sql
@@ -65,10 +68,10 @@ func main() {
 	if err := ctx.Run(wyd); err != nil {
 		if errors.Is(err, exit.ErrAborted) ||
 			errors.Is(err, huh.ErrUserAborted) {
-			c.Logger.Warn(err)
+			l.Warn(err)
 			os.Exit(exit.StatusAborted)
 		}
-		c.Logger.Error(err)
+		l.Error(err)
 		os.Exit(1)
 	}
 }

@@ -40,6 +40,24 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 	return i, err
 }
 
+const createTask = `-- name: CreateTask :one
+INSERT INTO tasks (name, project_id)
+VALUES (?, ?)
+RETURNING id, name, project_id
+`
+
+type CreateTaskParams struct {
+	Name      string
+	ProjectID int64
+}
+
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, createTask, arg.Name, arg.ProjectID)
+	var i Task
+	err := row.Scan(&i.ID, &i.Name, &i.ProjectID)
+	return i, err
+}
+
 const getClientByName = `-- name: GetClientByName :one
 SELECT id, name
 FROM clients

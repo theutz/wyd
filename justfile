@@ -4,6 +4,12 @@ set shell := ['zsh', '-euo', 'pipefail', '-c']
 set script-interpreter := ['zsh', '-euo', 'pipefail']
 set dotenv-load
 
+export DB_DIR := env('XDG_DATA_HOME', data_dir()) / "wyd"
+export DB_FILE := DB_DIR / "wyd.db"
+export GOOSE_DRIVER := "sqlite3"
+export GOOSE_DBSTRING := DB_FILE
+export GOOSE_MIGRATION_DIR := "migrations"
+
 export JUST_LIST_HEADING := ""
 export JUST_LIST_PREFIX := ""
 
@@ -27,10 +33,20 @@ build: db-gen
 run *args: db-gen
   go run -v ./... --debug-level 2 $@
 
-# watch tasks for dev
+# run tasks for dev
 [group('dev')]
 up:
-  process-compose
+  process-compose -D
+
+# shut down task watcher
+[group('dev')]
+down:
+  process-compose down
+
+# watch tasks for dev
+[group('dev')]
+dev: up
+  process-compose attach
 
 # run a command every time a file changes
 [group('dev')]

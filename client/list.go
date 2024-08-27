@@ -10,10 +10,10 @@ import (
 type ListCmd struct{}
 
 func (cmd *ListCmd) Run(b bindings.Bindings) error {
-	b.Logger.Debug("listing clients")
+	l.Debug("listing clients")
 	clients, err := b.Queries.ListClients(b.Context)
 	if err != nil {
-		b.Logger.Fatal(err)
+		l.Fatal(err)
 	}
 	t := table.New().
 		Headers("Name")

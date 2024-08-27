@@ -10,11 +10,11 @@ import (
 type ListCmd struct{}
 
 func (cmd *ListCmd) Run(b bindings.Bindings) error {
-	b.Logger.Debug("listing projects")
+	l.Debug("listing projects")
 
 	projects, err := b.Queries.ListProjects(b.Context)
 	if err != nil {
-		b.Logger.Fatal(err)
+		l.Fatal(err)
 	}
 
 	t := table.New().

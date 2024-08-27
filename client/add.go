@@ -10,9 +10,9 @@ type AddCmd struct {
 }
 
 func (cmd *AddCmd) Run(b bindings.Bindings) error {
-	b.Logger.Debug("adding client")
+	l.Debug("adding client")
 	name := cmd.Name
-	b.Logger.Debug("flag", "name", name)
+	l.Debug("flag", "name", name)
 
 	if name == "" {
 		err := huh.NewInput().
@@ -21,14 +21,14 @@ func (cmd *AddCmd) Run(b bindings.Bindings) error {
 			Value(&name).
 			Run()
 		if err != nil {
-			b.Logger.Fatal(err)
+			l.Fatal(err)
 		}
 	}
-	b.Logger.Debug("input", "name", name)
+	l.Debug("input", "name", name)
 
 	_, err := b.Queries.CreateClient(b.Context, name)
 	if err != nil {
-		b.Logger.Fatal(err)
+		l.Fatal(err)
 	}
 
 	return nil

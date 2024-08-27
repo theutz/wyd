@@ -4,18 +4,19 @@ processes:
   clients:
     command: watchexec -w . -w $$DB_FILE -- go run . clients list
     is_tty: true
+    disabled: false
   projects:
     command: watchexec -w . -w $$DB_FILE -- go run . projects list
     is_tty: true
+    disabled: false
   tasks:
     command: watchexec -w . -w $$DB_FILE -- go run . tasks list
     is_tty: true
   sqlc:
     command: watchexec -w queries.sql -- sqlc generate
-    is_tty: true
   just:
     command: watchexec -w justfile -w 'just' -- just
-    is_tty: true
+    disabled: false
   test:
     command: watchexec -w . -- go test ./...
-    is_tty: true
+    disabled: false

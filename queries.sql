@@ -22,6 +22,11 @@ FROM projects AS p
 INNER JOIN clients AS c
 ON c.id = p.client_id;
 
+-- name: CreateTask :one
+INSERT INTO tasks (name, project_id)
+VALUES (?, ?)
+RETURNING *;
+
 -- name: ListTasks :many
 SELECT t.name, p.name AS project_name
 FROM tasks AS t
