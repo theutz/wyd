@@ -4,9 +4,12 @@ set shell := ['zsh', '-euo', 'pipefail', '-c']
 set script-interpreter := ['zsh', '-euo', 'pipefail']
 set dotenv-load
 
+export JUST_LIST_HEADING := ""
+export JUST_LIST_PREFIX := ""
+
 [private]
 default:
-  just --list
+  @just --list --list-submodules
 
 # run the setup script
 [group('dev')]

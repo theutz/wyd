@@ -10,4 +10,4 @@ processes:
   sqlc:
     command: watchexec -w queries.sql -- sqlc generate
   just:
-    command: watchexec -w justfile -w 'just' -- just --list --list-submodules
+    command: watchexec -w justfile -w 'just' -- just
