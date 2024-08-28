@@ -36,9 +36,6 @@ processes:
     liveness_probe:
       exec:
         command: go run . tasks list
-  sqlc:
-    <<: *ready
-    command: watchexec -w internal/db/queries.sql -w internal/db/migrations -c -- sqlc generate
   just:
     <<: *ready
     command: watchexec -c -- just

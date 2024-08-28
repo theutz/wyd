@@ -14,6 +14,8 @@ import (
 	"github.com/theutz/wyd/internal/log"
 )
 
+//go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
+
 const shaLen = 7
 
 var (
