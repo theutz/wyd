@@ -2,11 +2,9 @@ package project
 
 import (
 	"github.com/theutz/wyd/internal/db"
-	"github.com/theutz/wyd/internal/log"
 )
 
 var (
-	l   = log.Get()
 	q   = db.Query
 	ctx = db.Ctx
 )

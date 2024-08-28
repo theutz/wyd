@@ -2,22 +2,21 @@ package tasks
 
 import (
 	"github.com/charmbracelet/lipgloss/table"
+	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/db"
-	"github.com/theutz/wyd/internal/log"
 )
 
 type ListCmd struct{}
 
 func (cmd *ListCmd) Run() error {
-	l := log.Get()
 	q := db.Query
 	ctx := db.Ctx
 
 	tasks, err := q.ListTasks(ctx)
 	if err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
-	l.Debug("tasks", "tasks", tasks)
+	log.Debug("tasks", "tasks", tasks)
 
 	t := table.New().
 		Headers("Task", "Project")
@@ -26,7 +25,7 @@ func (cmd *ListCmd) Run() error {
 		t.Row(task.Name, task.ProjectName)
 	}
 
-	l.Printf("Tasks:\n%s", t)
+	log.Printf("Tasks:\n%s", t)
 
 	return nil
 }

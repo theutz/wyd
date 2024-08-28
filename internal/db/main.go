@@ -6,9 +6,9 @@ import (
 	"embed"
 
 	"github.com/adrg/xdg"
+	"github.com/charmbracelet/log"
 	"github.com/pressly/goose/v3"
 	"github.com/theutz/wyd/internal/db/queries"
-	"github.com/theutz/wyd/internal/log"
 )
 
 //go:embed migrations/*.sql
@@ -25,31 +25,30 @@ var Db *sql.DB
 var Query queries.Queries
 
 func Init() *sql.DB {
-	l := log.Get()
 	var err error
 	DbFile, err = xdg.DataFile("wyd/wyd.db")
 	if err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	Db, err := sql.Open("sqlite3", DbFile)
 	if err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	if _, err := Db.Exec("PRAGMA foreign_keys = ON"); err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	if _, err := Db.ExecContext(Ctx, ddl); err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	goose.SetBaseFS(embedMigrations)
 
-	switch l.GetLevel().String() {
+	switch log.GetLevel().String() {
 	case "info":
-		goose.SetLogger(l)
+		goose.SetLogger(log.StandardLog())
 		fallthrough
 	case "debug":
 		goose.SetVerbose(true)
@@ -59,11 +58,11 @@ func Init() *sql.DB {
 	}
 
 	if err := goose.SetDialect("sqlite"); err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	if err := goose.Up(Db, "migrations"); err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	Query = *queries.New(Db)

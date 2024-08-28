@@ -4,20 +4,19 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss/table"
+	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/db"
-	"github.com/theutz/wyd/internal/log"
 )
 
 type ListCmd struct{}
 
 func (cmd *ListCmd) Run() error {
-	l := log.Get()
 	q := db.Query
 
-	l.Debug("listing clients")
+	log.Debug("listing clients")
 	clients, err := q.ListClients(ctx)
 	if err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 	t := table.New().
 		Headers("Name")

@@ -2,8 +2,8 @@ package client
 
 import (
 	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/db"
-	"github.com/theutz/wyd/internal/log"
 )
 
 var (
@@ -16,12 +16,10 @@ type AddCmd struct {
 }
 
 func (cmd *AddCmd) Run() error {
-	l := log.Get()
-
-	l.Debug("adding client")
+	log.Debug("adding client")
 
 	name := cmd.Name
-	l.Debug("flag", "name", name)
+	log.Debug("flag", "name", name)
 
 	if name == "" {
 		err := huh.NewInput().
@@ -30,14 +28,14 @@ func (cmd *AddCmd) Run() error {
 			Value(&name).
 			Run()
 		if err != nil {
-			l.Fatal(err)
+			log.Fatal(err)
 		}
 	}
-	l.Debug("input", "name", name)
+	log.Debug("input", "name", name)
 
 	_, err := q.CreateClient(ctx, name)
 	if err != nil {
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 
 	return nil

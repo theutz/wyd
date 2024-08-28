@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/alecthomas/kong"
-	clog "github.com/charmbracelet/log"
+	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/commands/client"
 	"github.com/theutz/wyd/internal/commands/project"
 	"github.com/theutz/wyd/internal/commands/tasks"
@@ -26,11 +26,11 @@ type DebugLevel int
 func (d DebugLevel) AfterApply() error {
 	switch d {
 	case 1:
-		l.SetLevel(clog.InfoLevel)
+		log.SetLevel(log.InfoLevel)
 	case 2:
-		l.SetLevel(clog.DebugLevel)
+		log.SetLevel(log.DebugLevel)
 	default:
-		l.SetLevel(clog.WarnLevel)
+		log.SetLevel(log.WarnLevel)
 	}
 
 	return nil
