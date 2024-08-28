@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"runtime/debug"
 
@@ -30,7 +31,11 @@ var (
 
 var l = log.Get()
 
-func main() {
+func exiter(code int) {
+	os.Exit(code)
+}
+
+func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
 	if Version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
 			Version = info.Main.Version
@@ -57,12 +62,18 @@ func main() {
 			Summary:             false,
 			NoExpandSubcommands: true,
 		}),
+		kong.Writers(stdout, stderr),
+		kong.Exit(exiter),
 		kong.Vars{
 			"version": version,
 			"db_file": db.DbFile,
 		})
+	return ctx.Run(wyd)
+}
 
-	if err := ctx.Run(wyd); err != nil {
+func main() {
+	err := run(os.Stdin, os.Stderr, exiter)
+	if err != nil {
 		if errors.Is(err, exit.ErrAborted) ||
 			errors.Is(err, huh.ErrUserAborted) {
 			l.Warn(err)
