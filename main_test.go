@@ -21,20 +21,34 @@ func panicsTrue(t *testing.T, f func()) {
 }
 
 func TestRun(t *testing.T) {
-	args := os.Args
-	exited := false
-	mockExiter := func(code int) {
-		exited = true
-		panic(true)
+	tests := []struct {
+		name  string
+		args  []string
+		wants string
+	}{
+		{"Help flag", []string{"--help"}, "Whatch'ya doin'?"},
+		{"Version flag", []string{"--version"}, "unknown (built from source)"},
 	}
-	defer func() { os.Args = args }()
 
-	w := bytes.NewBuffer(nil)
-	os.Args = []string{"--help"}
-	panicsTrue(t, func() {
-		err := run(w, w, mockExiter)
-		assert.NoError(t, err)
-	})
-	assert.True(t, exited)
-	assert.Contains(t, w.String(), "Whatch'ya doin'?")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			oldArgs := os.Args
+			exited := false
+			mockExiter := func(code int) {
+				exited = true
+				panic(true)
+			}
+			defer func() { os.Args = oldArgs }()
+
+			w := bytes.NewBuffer(nil)
+			args := append([]string{"wyd"}, tt.args...)
+			os.Args = args
+			panicsTrue(t, func() {
+				err := run(w, w, mockExiter)
+				assert.NoError(t, err)
+			})
+			assert.True(t, exited)
+			assert.Contains(t, w.String(), tt.wants)
+		})
+	}
 }
