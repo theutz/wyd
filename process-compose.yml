@@ -1,21 +1,8 @@
 version: "0.5"
 is_strict: true
-anchors:
-  - &ready
-    ready_log_line: "[Running:"
-  - &probe
-    initial_delay_seconds: 2
-    period_seconds: 3
-    success_threshold: 1
-    failure_threshold: 5
-  - &list
-    <<: *ready
-    is_tty: true
-    disabled: false
-    liveness_probe: *probe
 processes:
   test:
-    <<: *ready
+    ready_log_line: "[Running:"
     command: watchexec -c -- go test ./...
     is_tty: true
 # vim: fdl=1

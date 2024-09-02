@@ -98,6 +98,41 @@ func (q *Queries) ListClients(ctx context.Context) ([]Client, error) {
 	return items, nil
 }
 
+const listEntries = `-- name: ListEntries :many
+SELECT e.name, t.name AS task_name
+FROM entries AS e
+INNER JOIN tasks AS t
+ON t.id = e.task_id
+`
+
+type ListEntriesRow struct {
+	Name     string
+	TaskName string
+}
+
+func (q *Queries) ListEntries(ctx context.Context) ([]ListEntriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listEntries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListEntriesRow
+	for rows.Next() {
+		var i ListEntriesRow
+		if err := rows.Scan(&i.Name, &i.TaskName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listProjects = `-- name: ListProjects :many
 SELECT p.id, p.name, p.client_id, c.name AS client_name
 FROM projects AS p
@@ -144,7 +179,7 @@ const listTasks = `-- name: ListTasks :many
 SELECT t.name, p.name AS project_name
 FROM tasks AS t
 INNER JOIN projects AS p
-on p.id = t.project_id
+ON p.id = t.project_id
 `
 
 type ListTasksRow struct {

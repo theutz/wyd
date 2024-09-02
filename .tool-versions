@@ -6,3 +6,4 @@ sqlite 3.46.1
 watchexec 2.1.2
 process-compose 1.24.2
 lorem 0.8.0
+sqlc 1.27.0

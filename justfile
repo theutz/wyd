@@ -8,7 +8,7 @@ export DB_DIR := env('XDG_DATA_HOME', data_dir()) / "wyd"
 export DB_FILE := DB_DIR / "wyd.db"
 export GOOSE_DRIVER := "sqlite3"
 export GOOSE_DBSTRING := DB_FILE
-export GOOSE_MIGRATION_DIR := "migrations"
+export GOOSE_MIGRATION_DIR := "internal/db/migrations"
 
 export JUST_LIST_HEADING := ""
 export JUST_LIST_PREFIX := ""

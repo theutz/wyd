@@ -31,4 +31,10 @@ RETURNING *;
 SELECT t.name, p.name AS project_name
 FROM tasks AS t
 INNER JOIN projects AS p
-on p.id = t.project_id;
+ON p.id = t.project_id;
+
+-- name: ListEntries :many
+SELECT e.name, t.name AS task_name
+FROM entries AS e
+INNER JOIN tasks AS t
+ON t.id = e.task_id;

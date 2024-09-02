@@ -4,6 +4,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/commands/client"
+	"github.com/theutz/wyd/internal/commands/entries"
 	"github.com/theutz/wyd/internal/commands/project"
 	"github.com/theutz/wyd/internal/commands/tasks"
 )
@@ -18,6 +19,7 @@ type Wyd struct {
 	Client  client.ClientCmd   `cmd:"" help:"work with clients" aliases:"clients,c"`
 	Project project.ProjectCmd `cmd:"" help:"work with projects" aliases:"projects,p"`
 	Task    tasks.TaskCmd      `cmd:"" help:"work with tasks" aliases:"tasks,t"`
+	Entry   entries.EntryCmd   `cmd:"" help:"work with entries" aliases:"entries,e"`
 	Globals
 }
 

@@ -30,6 +30,7 @@ func TestRun_Subcommands(t *testing.T) {
 		{"list of projects", []string{"projects", "list"}, "Project Name"},
 		{"list of clients", []string{"clients", "list"}, "Client Name"},
 		{"list of tasks", []string{"tasks", "list"}, "Task Name"},
+		{"list of entries", []string{"entries", "list"}, "Task Name"},
 	}
 
 	for _, tt := range tests {

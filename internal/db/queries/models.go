@@ -9,6 +9,12 @@ type Client struct {
 	Name string
 }
 
+type Entry struct {
+	ID     int64
+	Name   string
+	TaskID int64
+}
+
 type Project struct {
 	ID       int64
 	Name     string
