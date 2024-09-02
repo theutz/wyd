@@ -36,7 +36,14 @@ run *args: db-gen
 # run tasks for dev
 [group('dev')]
 up:
-  process-compose
+  watchexec \
+    -w process-compose.yml \
+    -w justfile \
+    -w .pc_env \
+    --wrap-process=none \
+    --restart \
+    -- \
+    process-compose --keep-project
 
 # run a command every time a file changes
 [group('dev')]
