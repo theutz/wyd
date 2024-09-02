@@ -1,4 +1,4 @@
-package exit
+package main
 
 import "fmt"
 

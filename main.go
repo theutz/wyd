@@ -12,7 +12,6 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/theutz/wyd/internal/exit"
 	"github.com/theutz/wyd/queries"
 )
 
@@ -105,10 +104,10 @@ func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
 func main() {
 	err := run(os.Stdin, os.Stderr, exiter)
 	if err != nil {
-		if errors.Is(err, exit.ErrAborted) ||
+		if errors.Is(err, ErrAborted) ||
 			errors.Is(err, huh.ErrUserAborted) {
 			log.Warn(err)
-			os.Exit(exit.StatusAborted)
+			os.Exit(StatusAborted)
 		}
 		log.Error(err)
 		os.Exit(1)
