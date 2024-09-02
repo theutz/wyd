@@ -19,7 +19,7 @@ func (cmd *ListCmd) Run() error {
 		log.Fatal(err)
 	}
 	t := table.New().
-		Headers("Name")
+		Headers("Client Name")
 	for _, client := range clients {
 		t.Row(client.Name)
 	}

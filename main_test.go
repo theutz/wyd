@@ -21,14 +21,15 @@ func panicsTrue(t *testing.T, f func()) {
 	t.Fatal("expected panic did not occur")
 }
 
-func TestRun_Projects(t *testing.T) {
+func TestRun_Subcommands(t *testing.T) {
 	tests := []struct {
 		name  string
 		args  []string
 		wants string
 	}{
-		{"project list", []string{"projects", "list"}, "Client"},
-		{"client list", []string{"clients", "list"}, "Name"},
+		{"list of projects", []string{"projects", "list"}, "Project Name"},
+		{"list of clients", []string{"clients", "list"}, "Client Name"},
+		{"list of tasks", []string{"tasks", "list"}, "Task Name"},
 	}
 
 	for _, tt := range tests {

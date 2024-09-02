@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/db"
@@ -19,13 +21,13 @@ func (cmd *ListCmd) Run() error {
 	log.Debug("tasks", "tasks", tasks)
 
 	t := table.New().
-		Headers("Task", "Project")
+		Headers("Task Name", "Project Name")
 
 	for _, task := range tasks {
 		t.Row(task.Name, task.ProjectName)
 	}
 
-	log.Printf("Tasks:\n%s", t)
+	fmt.Println(t)
 
 	return nil
 }

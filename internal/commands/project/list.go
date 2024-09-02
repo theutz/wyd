@@ -22,7 +22,7 @@ func (cmd *ListCmd) Run() error {
 	}
 
 	t := table.New().
-		Headers("Name", "Client")
+		Headers("Project Name", "Client Name")
 
 	for _, project := range projects {
 		t.Row(project.Name, project.ClientName)

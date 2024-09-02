@@ -2,7 +2,7 @@ version: "0.5"
 is_strict: true
 anchors:
   - &ready
-    ready_log_line: "[Command was successful]"
+    ready_log_line: "[Running:"
   - &probe
     initial_delay_seconds: 2
     period_seconds: 3
@@ -12,38 +12,8 @@ anchors:
     <<: *ready
     is_tty: true
     disabled: false
-    ready_log_line: "[Command was successful]"
     liveness_probe: *probe
 processes:
-  list-clients:
-    <<: *list
-    command: watchexec -w . -w $$DB_FILE -e go -c -- go run . clients list
-    namespace: clients
-    liveness_probe:
-      exec:
-        command: go run . clients list
-  list-projects:
-    <<: *list
-    command: watchexec -w . -w $$DB_FILE -e go -c -- go run . projects list
-    namespace: projects
-    liveness_probe:
-      exec:
-        command: go run . projects list
-  list-tasks:
-    <<: *list
-    command: watchexec -w . -w $$DB_FILE -e go -c -- go run . tasks list
-    namespace: tasks
-    liveness_probe:
-      exec:
-        command: go run . tasks list
-  just:
-    <<: *ready
-    command: watchexec -c -- just
-    is_tty: true
-    liveness_probe:
-      <<: *probe
-      exec:
-        command: just --list
   test:
     <<: *ready
     command: watchexec -c -- go test ./...
