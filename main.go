@@ -67,23 +67,25 @@ func makeLogger(w io.Writer) *log.Logger {
 func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
 	log := makeLogger(stdout)
 	db, err := initDatabase()
-	defer db.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
 
 	err = setupGoose(log, db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	context := Context{
-		log: log,
+	context := &Context{
+		log:     log,
+		queries: queries.New(db),
+		dbCtx:   dbContext,
 	}
 
-	wyd := &Wyd{}
+	cli := &Wyd{}
 	ctx := kong.Parse(
-		wyd,
+		cli,
 		kong.Description("Whatch'ya doin'?"),
 		kong.UsageOnError(),
 		kong.ConfigureHelp(kong.HelpOptions{
@@ -91,14 +93,13 @@ func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
 			Summary:             false,
 			NoExpandSubcommands: true,
 		}),
-		kong.Bind(context),
 		kong.Writers(stdout, stderr),
 		kong.Exit(exiter),
 		kong.Vars{
 			"version": getVersion(),
 			"db_file": dbFile,
 		})
-	return ctx.Run(wyd)
+	return ctx.Run(context)
 }
 
 func main() {
