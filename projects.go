@@ -1,19 +1,31 @@
-package project
+package main
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/db/queries"
+	"github.com/theutz/wyd/queries"
 )
 
-type AddCmd struct {
+type ProjectsCmd struct {
+	Add  AddProjectCmd  `cmd:"" help:"add a project"`
+	List ListProjectCmd `cmd:"" help:"list all projects"`
+}
+
+func (cmd *ProjectsCmd) Run() error {
+	return nil
+}
+
+type AddProjectCmd struct {
 	Name   string `short:"n" help:"the name of the package"`
 	Client string `short:"c" help:"the name of the client"`
 	fields []huh.Field
 	params queries.CreateProjectParams
 }
 
-func (cmd *AddCmd) handleName() {
+func (cmd *AddProjectCmd) handleName() {
 	if cmd.Name == "" {
 		name := huh.NewInput().
 			Title("Name").
@@ -25,11 +37,11 @@ func (cmd *AddCmd) handleName() {
 	}
 }
 
-func (cmd *AddCmd) handleClient() {
+func (cmd *AddProjectCmd) handleClient(c *Context) {
 	if cmd.Client == "" {
 		log.Debug("client is empty. prompting for input.")
 		log.Debug("loading clients")
-		clients, err := q.ListClients(ctx)
+		clients, err := c.queries.ListClients(c.dbCtx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -50,7 +62,7 @@ func (cmd *AddCmd) handleClient() {
 		cmd.fields = append(cmd.fields, client)
 	} else {
 		log.Debug("searching for client by name", "name", cmd.Client)
-		client, err := q.GetClientByName(ctx, cmd.Client)
+		client, err := c.queries.GetClientByName(c.dbCtx, cmd.Client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -59,16 +71,16 @@ func (cmd *AddCmd) handleClient() {
 	}
 }
 
-func (cmd *AddCmd) saveProject() {
+func (cmd *AddProjectCmd) saveProject(c *Context) {
 	log.Debug("creating project", "params", cmd.params)
-	project, err := q.CreateProject(ctx, cmd.params)
+	project, err := c.queries.CreateProject(c.dbCtx, cmd.params)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Info("project created", "project", project)
 }
 
-func (cmd *AddCmd) runForm() {
+func (cmd *AddProjectCmd) runForm() {
 	if len(cmd.fields) > 0 {
 		form := huh.NewForm(
 			huh.NewGroup(cmd.fields...),
@@ -80,15 +92,37 @@ func (cmd *AddCmd) runForm() {
 	}
 }
 
-func (cmd *AddCmd) Run() error {
+func (cmd *AddProjectCmd) Run(c *Context) error {
 	log.Debug("adding project")
 	log.Debug("flag", "name", cmd.Name)
 	log.Debug("flag", "client", cmd.Client)
 
 	cmd.handleName()
-	cmd.handleClient()
+	cmd.handleClient(c)
 	cmd.runForm()
-	cmd.saveProject()
+	cmd.saveProject(c)
+
+	return nil
+}
+
+type ListProjectCmd struct{}
+
+func (cmd *ListProjectCmd) Run(c *Context) error {
+	log.Debug("listing projects")
+
+	projects, err := c.queries.ListProjects(c.dbCtx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	t := table.New().
+		Headers("Project Name", "Client Name")
+
+	for _, project := range projects {
+		t.Row(project.Name, project.ClientName)
+	}
+
+	fmt.Println(t)
 
 	return nil
 }

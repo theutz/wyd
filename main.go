@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -11,8 +12,8 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/exit"
+	"github.com/theutz/wyd/queries"
 )
 
 //go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
@@ -33,11 +34,13 @@ func exiter(code int) {
 	os.Exit(code)
 }
 
-func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
-	log.SetOutput(os.Stderr)
-	log.SetLevel(log.WarnLevel)
-	log.SetPrefix("wyd")
+type Context struct {
+	log     *log.Logger
+	queries *queries.Queries
+	dbCtx   context.Context
+}
 
+func getVersion() string {
 	if Version == "" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Sum != "" {
 			Version = info.Main.Version
@@ -51,8 +54,32 @@ func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
 		version += " (" + CommitSHA[:shaLen] + ")"
 	}
 
-	conn := db.Init()
-	defer conn.Close()
+	return version
+}
+
+func makeLogger(w io.Writer) *log.Logger {
+	l := log.New(w)
+	log.SetLevel(log.WarnLevel)
+	log.SetPrefix("wyd")
+	return l
+}
+
+func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
+	log := makeLogger(stdout)
+	db, err := initDatabase()
+	defer db.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = setupGoose(log, db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	context := Context{
+		log: log,
+	}
 
 	wyd := &Wyd{}
 	ctx := kong.Parse(
@@ -64,11 +91,12 @@ func run(stdout io.Writer, stderr io.Writer, exiter func(int)) error {
 			Summary:             false,
 			NoExpandSubcommands: true,
 		}),
+		kong.Bind(context),
 		kong.Writers(stdout, stderr),
 		kong.Exit(exiter),
 		kong.Vars{
-			"version": version,
-			"db_file": db.DbFile,
+			"version": getVersion(),
+			"db_file": dbFile,
 		})
 	return ctx.Run(wyd)
 }

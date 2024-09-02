@@ -1,4 +1,4 @@
-package db
+package main
 
 import (
 	"context"
@@ -8,42 +8,40 @@ import (
 	"github.com/adrg/xdg"
 	"github.com/charmbracelet/log"
 	"github.com/pressly/goose/v3"
-	"github.com/theutz/wyd/internal/db/queries"
 )
 
 //go:embed migrations/*.sql
 var embedMigrations embed.FS
 
-var Ctx = context.Background()
-
-var DbFile string
-
 var ddl string
 
-var Db *sql.DB
+var dbContext = context.Background()
 
-var Query queries.Queries
+var dbFile string
 
-func Init() *sql.DB {
-	var err error
-	DbFile, err = xdg.DataFile("wyd/wyd.db")
+func initDatabase() (*sql.DB, error) {
+	dbFile, err := xdg.DataFile("wyd/wyd.db")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	Db, err := sql.Open("sqlite3", DbFile)
+	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	if _, err := Db.Exec("PRAGMA foreign_keys = ON"); err != nil {
-		log.Fatal(err)
+	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return nil, err
 	}
 
-	if _, err := Db.ExecContext(Ctx, ddl); err != nil {
-		log.Fatal(err)
+	if _, err := db.ExecContext(dbContext, ddl); err != nil {
+		return nil, err
 	}
 
+	return db, nil
+}
+
+func setupGoose(log *log.Logger, db *sql.DB) error {
 	goose.SetBaseFS(embedMigrations)
 
 	switch log.GetLevel().String() {
@@ -58,14 +56,12 @@ func Init() *sql.DB {
 	}
 
 	if err := goose.SetDialect("sqlite"); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	if err := goose.Up(Db, "migrations"); err != nil {
-		log.Fatal(err)
+	if err := goose.Up(db, "migrations"); err != nil {
+		return err
 	}
 
-	Query = *queries.New(Db)
-
-	return Db
+	return nil
 }
