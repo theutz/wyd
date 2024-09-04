@@ -1,9 +1,3 @@
 golang 1.23.0
-just 1.34.0
-goose 3.21.1
-gum 0.14.4
 sqlite 3.46.1
 watchexec 2.1.2
-process-compose 1.24.2
-lorem 0.8.0
-sqlc 1.27.0

@@ -1,9 +1,0 @@
-version: "0.5"
-is_strict: true
-processes:
-  test:
-    ready_log_line: "[Running:"
-    command: watchexec -c -- go test ./...
-    is_tty: true
-# vim: fdl=1
-
