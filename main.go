@@ -2,14 +2,21 @@ package main
 
 import "os"
 
-func exiter(exitCode int) {
-	os.Exit(exitCode)
+type Program interface {
+	Exit(code int)
 }
 
-func run(exit func(exitCode int)) {
-	exit(0)
+type Prog struct{}
+
+func (p *Prog) Exit(code int) {
+	os.Exit(code)
+}
+
+func Run(p Program) {
+	p.Exit(1)
 }
 
 func main() {
-	run(exiter)
+	p := &Prog{}
+	Run(p)
 }
