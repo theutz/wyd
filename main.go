@@ -11,14 +11,22 @@ type Program interface {
 	Exit(code int)
 	SetArgs(args []string)
 	GetArgs() []string
+	GetLogger() *log.Logger
 }
 
 type Prog struct {
 	args []string
+	log  *log.Logger
 }
 
 func NewProg() *Prog {
-	p := &Prog{}
+	l := log.New(os.Stderr)
+	l.SetPrefix("wyd")
+
+	p := &Prog{
+		log: l,
+	}
+
 	return p
 }
 
@@ -34,9 +42,14 @@ func (p *Prog) GetArgs() []string {
 	return p.args
 }
 
-func Run(p Program, c cli.CLIer, log *log.Logger) {
+func (p *Prog) GetLogger() *log.Logger {
+	return p.log
+}
+
+func Run(p Program, c cli.CliRunner) {
+	l := p.GetLogger()
 	if err := c.Run(p.GetArgs()...); err != nil {
-		log.Error(err)
+		l.Error(err)
 		p.Exit(1)
 		return
 	}
@@ -48,7 +61,5 @@ func main() {
 	p := NewProg()
 	p.SetArgs(os.Args[1:])
 	c := cli.New(p)
-	log := log.New(os.Stderr)
-	log.SetPrefix("wyd")
-	Run(p, c, log)
+	Run(p, c)
 }

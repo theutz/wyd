@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
@@ -12,24 +11,35 @@ type MockProgram struct {
 }
 
 func (p *MockProgram) Exit(code int) {
-	fmt.Printf("code %d", code)
 	p.exitCode = code
 }
 
 type MockCli struct{}
 
-func TestNew(t *testing.T) {
-	p := &MockProgram{}
-	got := New(p)
-	assert.NotZero(t, got)
-}
-
-func TestRun(t *testing.T) {
+func TestHelpFlag(t *testing.T) {
+	// Arrange
 	p := &MockProgram{
-		exitCode: 0,
+		exitCode: -1,
 	}
 	c := New(p)
+
+	// Act
 	err := c.Run("--help")
-	assert.NoError(t, err)
+
+	// Assert
+	assert.Error(t, err)
 	assert.Equal(t, p.exitCode, 0)
+}
+
+func TestDebugFlag(t *testing.T) {
+	// Arrange
+	p := &MockProgram{}
+	c := New(p)
+
+	// Act
+	err := c.Run("--debug")
+
+	// Assert
+	assert.Error(t, err)
+	assert.True(t, c.Values().Debug)
 }
