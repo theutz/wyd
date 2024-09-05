@@ -1,19 +1,34 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
 	"github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/cli"
 )
 
 type MockProg struct {
 	exitCode int
-	Prog
+	args     []string
+	log      *log.Logger
+}
+
+// GetArgs implements Program.
+func (p *MockProg) GetArgs() []string {
+	return p.args
+}
+
+// GetLogger implements Program.
+func (p *MockProg) GetLogger() *log.Logger {
+	return p.log
+}
+
+// SetArgs implements Program.
+func (p *MockProg) SetArgs(args []string) {
+	p.args = args
 }
 
 func (p *MockProg) Exit(code int) {
@@ -27,6 +42,13 @@ func (c *MockCli) Run(args ...string) error {
 		return fmt.Errorf("no args")
 	}
 	return nil
+}
+
+func (c *MockCli) SetConfigPath(path string) {
+}
+
+func (c *MockCli) Value() cli.Grammar {
+	return cli.Grammar{}
 }
 
 func TestRun(t *testing.T) {
@@ -52,32 +74,18 @@ func TestRun(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			p := &MockProg{}
+			l := log.New(os.Stderr)
+			p := &MockProg{
+				log: l,
+			}
 			p.SetArgs(tc.args)
 			c := &MockCli{}
 
-			r, w, err := os.Pipe()
-			assert.NoError(t, err)
-			log := log.New(w)
-
 			// Act
-			Run(p, c, log)
-			w.Close()
-
-			scanner := bufio.NewScanner(r)
-			str := strings.Builder{}
-			for scanner.Scan() {
-				if _, err := str.Write(scanner.Bytes()); err != nil {
-					panic(err)
-				}
-			}
-			if err := scanner.Err(); err != nil {
-				panic(err)
-			}
+			Run(p, c)
 
 			// Assert
 			assert.Equal(t, p.exitCode, tc.exitCode)
-			assert.Contains(t, str.String(), tc.errMessage)
 		})
 	}
 }

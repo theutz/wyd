@@ -20,18 +20,39 @@ func (p *MockProgram) Exit(code int) {
 type MockCli struct{}
 
 func Test_Flag_Help(t *testing.T) {
-	// Arrange
-	p := &MockProgram{
-		exitCode: -1,
+	testCases := []struct {
+		name string
+		args []string
+		err  string
+	}{
+		{
+			name: "long",
+			args: []string{"--help"},
+			err:  "running kong: no command selected",
+		},
+		{
+			name: "short",
+			args: []string{"-h"},
+			err:  "running kong: no command selected",
+		},
 	}
-	c := New(p)
 
-	// Act
-	err := c.Run("--help")
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Arrange
+			p := &MockProgram{
+				exitCode: -1,
+			}
+			c := New(p)
 
-	// Assert
-	assert.Error(t, err)
-	assert.Equal(t, p.exitCode, 0)
+			// Act
+			err := c.Run(tc.args...)
+
+			// Assert
+			assert.EqualError(t, err, tc.err)
+			assert.Equal(t, p.exitCode, 0)
+		})
+	}
 }
 
 func Test_Flag_Debug(t *testing.T) {
