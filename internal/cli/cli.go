@@ -8,52 +8,54 @@ import (
 
 type CliRunner interface {
 	Run(args ...string) error
-	Values() Values
+	Value() Value
 }
 
 type Context struct{}
 
-type Values struct {
+type Grammar struct {
 	Debug bool `help:"enable debug mode"`
 }
 
 type Cli struct {
-	values  *Values
+	grammar *Grammar
 	program Program
 }
+
+type Value = Grammar
 
 type Program interface {
 	Exit(code int)
 }
 
 func New(p Program) CliRunner {
-	g := &Values{}
+	v := &Grammar{}
 	c := &Cli{
-		values:  g,
+		grammar: v,
 		program: p,
 	}
 	return c
 }
 
-func (c *Cli) Values() Values {
-	return *c.values
+func (c *Cli) Value() Value {
+	return *c.grammar
 }
 
 func (c *Cli) Run(args ...string) error {
 	k, err := kong.New(
-		c.values,
+		c.grammar,
 		kong.Exit(c.program.Exit),
 	)
 	if err != nil {
 		return fmt.Errorf("creating kong: %w", err)
 	}
 
-	parser, err := k.Parse(args)
+	ctx, err := k.Parse(args)
 	if err != nil {
 		return fmt.Errorf("parsing kong: %w", err)
 	}
 
-	if err := parser.Run(); err != nil {
+	if err := ctx.Run(); err != nil {
 		return fmt.Errorf("running kong: %w", err)
 	}
 

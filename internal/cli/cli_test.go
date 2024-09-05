@@ -41,5 +41,5 @@ func TestDebugFlag(t *testing.T) {
 
 	// Assert
 	assert.Error(t, err)
-	assert.True(t, c.Values().Debug)
+	assert.True(t, c.Value().Debug)
 }
