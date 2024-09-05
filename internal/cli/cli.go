@@ -14,7 +14,8 @@ type CliRunner interface {
 type Context struct{}
 
 type Grammar struct {
-	Debug bool `help:"enable debug mode"`
+	Debug        bool   `help:"enable debug mode"`
+	DatabasePath string `help:"set the path for the data"`
 }
 
 type Cli struct {
