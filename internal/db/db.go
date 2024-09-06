@@ -13,11 +13,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
 	_ "github.com/sqlc-dev/sqlc"
+	"github.com/theutz/wyd/internal/db/queries"
 )
 
 //go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
-
-var ddl string
 
 //go:embed migrations/*.sql
 var embedMigrations embed.FS
@@ -71,7 +70,25 @@ func makeDsn(path string) (string, error) {
 	return dsn, nil
 }
 
-func New(ctx context.Context, path string) (*sql.DB, error) {
+type DB interface {
+	Close() error
+	Queries() *queries.Queries
+}
+
+type Db struct {
+	db      *sql.DB
+	queries *queries.Queries
+}
+
+func (d *Db) Close() error {
+	return d.db.Close()
+}
+
+func (d *Db) Queries() *queries.Queries {
+	return d.queries
+}
+
+func New(ctx context.Context, path string) (DB, error) {
 	dsn, err := makeDsn(path)
 	if err != nil {
 		return nil, err
@@ -88,9 +105,16 @@ func New(ctx context.Context, path string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := goose.Up(db, "migrations"); err != nil {
+	if err := goose.UpContext(ctx, db, "migrations"); err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	queries := queries.New(db)
+
+	o := &Db{
+		db:      db,
+		queries: queries,
+	}
+
+	return o, nil
 }
