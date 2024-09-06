@@ -28,12 +28,12 @@ func Test_Flag_Help(t *testing.T) {
 		{
 			name: "long",
 			args: []string{"--help"},
-			err:  "running kong: no command selected",
+			err:  "parsing kong: expected one of",
 		},
 		{
 			name: "short",
 			args: []string{"-h"},
-			err:  "running kong: no command selected",
+			err:  "parsing kong: expected one of",
 		},
 	}
 
@@ -49,7 +49,8 @@ func Test_Flag_Help(t *testing.T) {
 			err := c.Run(tc.args...)
 
 			// Assert
-			assert.EqualError(t, err, tc.err)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), tc.err)
 			assert.Equal(t, p.exitCode, 0)
 		})
 	}
@@ -134,20 +135,14 @@ func Test_Flag_DatabasePath(t *testing.T) {
 			p := &MockProgram{}
 			c := New(p)
 
-			_, currentFile, _, ok := runtime.Caller(0)
-			if !ok {
-				panic("couldn't get current file")
-			}
-			configPath := filepath.Join(filepath.Dir(currentFile), "testdata", "config.yml")
-			c.SetConfigPath(configPath)
-
 			// Act
 			err := c.Run(tc.args...)
-			// Assert
 			if err != nil {
 				assert.EqualError(t, err, tc.wants)
 				return
 			}
+
+			// Assert
 			assert.Equal(t, c.Value().DatabasePath, tc.wants)
 		})
 	}

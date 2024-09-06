@@ -1,6 +1,8 @@
 package clients
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type ListCmd struct{}
 

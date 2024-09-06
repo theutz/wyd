@@ -10,6 +10,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/pressly/goose/v3 v3.22.0
 	github.com/sqlc-dev/sqlc v1.27.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -32,5 +33,4 @@ require (
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
