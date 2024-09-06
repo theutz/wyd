@@ -5,6 +5,8 @@ import (
 
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
+	"github.com/theutz/wyd/internal/cli/clients"
+	"github.com/theutz/wyd/internal/cli/projects"
 )
 
 type CliRunner interface {
@@ -22,9 +24,11 @@ func (c *NoopCmd) Run() error {
 }
 
 type Grammar struct {
-	Noop         NoopCmd `cmd:"" default:"withargs" hidden:""`
-	Debug        bool    `short:"v" name:"verbose" help:"enable verbose logging"`
-	DatabasePath string  `short:"d" help:"where to store the database" type:"existingfile"`
+	Clients      clients.ClientsCmd   `cmd:"" help:"working with clients" aliases:"client,c"`
+	Projects     projects.ProjectsCmd `cmd:"" help:"working with projects" aliases:"project,p"`
+	Noop         NoopCmd              `cmd:"" default:"withargs" hidden:""`
+	Debug        bool                 `short:"v" name:"verbose" help:"enable verbose logging"`
+	DatabasePath string               `short:"d" help:"where to store the database" type:"existingfile"`
 }
 
 type Cli struct {
