@@ -3,3 +3,4 @@ sqlite 3.46.1
 watchexec 2.1.2
 goose 3.22.0
 mage 1.14.0
+sqlc 1.27.0

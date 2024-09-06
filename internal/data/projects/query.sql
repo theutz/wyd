@@ -6,8 +6,3 @@ FROM projects;
 INSERT INTO projects (name, client_id)
 VALUES (?, ?)
 RETURNING *;
-
--- name: AddClient :one
-INSERT INTO clients (name)
-VALUES (?)
-RETURNING *;

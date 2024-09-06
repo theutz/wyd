@@ -1,0 +1,16 @@
+version: "2"
+sql:
+  - &base
+    engine: sqlite
+    queries: "internal/data/clients/query.sql"
+    schema: "internal/db/migrations"
+    gen:
+      go:
+        package: clients
+        out: "internal/data/clients"
+  - <<: *base
+    queries: "internal/data/projects/query.sql"
+    gen:
+      go:
+        package: projects
+        out: "internal/data/projects"

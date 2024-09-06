@@ -1,25 +1,10 @@
-package db
+package projects
 
 import (
-	"context"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
-	"github.com/theutz/wyd/internal/db/queries"
 )
-
-func db(t *testing.T) (
-	db DB,
-	ctx context.Context,
-	q *queries.Queries,
-) {
-	t.Helper()
-	ctx = context.Background()
-	db, err := New(ctx, ":memory:")
-	assert.NoError(t, err)
-	q = db.Queries()
-	return
-}
 
 func TestProjectsCount(t *testing.T) {
 	// Arrange
@@ -63,17 +48,4 @@ func TestAddProject(t *testing.T) {
 	// Assert
 	assert.Equal(t, "boo", project.Name)
 	assert.Equal(t, 1, project.ClientID)
-}
-
-func TestAddClient(t *testing.T) {
-	// Arrange
-	db, ctx, q := db(t)
-	defer db.Close()
-
-	// Act
-	c, err := q.AddClient(ctx, "delegator")
-	assert.NoError(t, err)
-
-	// Assert
-	assert.Equal(t, "delegator", c.Name)
 }

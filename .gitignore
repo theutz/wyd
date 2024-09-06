@@ -2,4 +2,5 @@
 
 dist/
 wyd
-internal/db/queries
+internal/data/*/*.go
+!internal/data/*/*_test.go

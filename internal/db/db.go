@@ -16,8 +16,6 @@ import (
 	"github.com/theutz/wyd/internal/db/queries"
 )
 
-//go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
-
 //go:embed migrations/*.sql
 var embedMigrations embed.FS
 
