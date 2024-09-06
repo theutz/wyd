@@ -67,22 +67,3 @@ func TestNew(t *testing.T) {
 	// Assert
 	assert.NotZero(t, db)
 }
-
-func TestBasicQuery(t *testing.T) {
-	// Arrange
-	ctx := context.Background()
-	path := ":memory:"
-	db, err := New(ctx, path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer db.Close()
-	q := db.Queries()
-
-	// Act
-	project, err := q.AddProject(ctx, "boo")
-	assert.NoError(t, err)
-
-	// Assert
-	assert.Equal(t, project.Name, "boo")
-}

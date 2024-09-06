@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS projects (
 
 -- +goose Down
 -- +goose StatementBegin
-DELETE TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS projects;
 -- +goose StatementEnd
