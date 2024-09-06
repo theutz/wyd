@@ -1,15 +1,20 @@
 package projects
 
 import (
+	"context"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
+	"github.com/theutz/wyd/internal/db"
 )
 
 func TestProjectsCount(t *testing.T) {
 	// Arrange
-	db, ctx, q := db(t)
+	ctx := context.Background()
+	db, err := db.New(ctx, ":memory:")
+	assert.NoError(t, err)
 	defer db.Close()
+	q := New(db)
 
 	// Act
 	count, err := q.ProjectsCount(ctx)
@@ -19,7 +24,7 @@ func TestProjectsCount(t *testing.T) {
 	assert.Equal(t, 0, count)
 
 	// Arrange
-	_, err = q.AddProject(ctx, queries.AddProjectParams{
+	_, err = q.AddProject(ctx, AddProjectParams{
 		Name:     "boo",
 		ClientID: 1,
 	})
@@ -35,11 +40,14 @@ func TestProjectsCount(t *testing.T) {
 
 func TestAddProject(t *testing.T) {
 	// Arrange
-	db, ctx, q := db(t)
+	ctx := context.Background()
+	db, err := db.New(ctx, ":memory:")
+	assert.NoError(t, err)
 	defer db.Close()
+	q := New(db)
 
 	// Act
-	project, err := q.AddProject(ctx, queries.AddProjectParams{
+	project, err := q.AddProject(ctx, AddProjectParams{
 		Name:     "boo",
 		ClientID: 1,
 	})
