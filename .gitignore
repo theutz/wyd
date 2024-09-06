@@ -2,3 +2,4 @@
 
 dist/
 wyd
+internal/db/queries

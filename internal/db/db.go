@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"fmt"
@@ -11,9 +12,11 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
+	_ "github.com/sqlc-dev/sqlc"
 )
 
-//go:embed migrations/*.sql
+//go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
+
 var ddl string
 
 //go:embed migrations/*.sql
@@ -68,7 +71,7 @@ func makeDsn(path string) (string, error) {
 	return dsn, nil
 }
 
-func New(path string) (*sql.DB, error) {
+func New(ctx context.Context, path string) (*sql.DB, error) {
 	dsn, err := makeDsn(path)
 	if err != nil {
 		return nil, err

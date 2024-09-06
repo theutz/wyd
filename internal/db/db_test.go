@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -55,10 +56,11 @@ func TestMakeDsn(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	// Arrange
+	ctx := context.Background()
 	path := ":memory:"
 
 	// Act
-	db, err := New(path)
+	db, err := New(ctx, path)
 
 	// Assert
 	assert.NoError(t, err)
