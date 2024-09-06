@@ -10,43 +10,52 @@ import (
 )
 
 func TestMakeDsn(t *testing.T) {
+	suffix := "foreign_keys=on&journal_mode=WAL"
 	testCases := []struct {
-		name   string
-		path   string
-		suffix string
+		name  string
+		path  func() string
+		wants string
 	}{
 		{
 			name: "absolute path",
-			path: "/home/dude/wheres/my/car.db",
+			path: func() string {
+				base := "/home/dude/wheres/my/car.db"
+				tmpPath := filepath.Join(os.TempDir(), base)
+				return tmpPath
+			},
+			wants: fmt.Sprintf(
+				"file:%s?%s",
+				filepath.Join(
+					os.TempDir(),
+					"/home/dude/wheres/my/car.db",
+				),
+				suffix,
+			),
+		},
+		{
+			name: "in-memory database",
+			path: func() string {
+				return ":memory:"
+			},
+			wants: fmt.Sprintf(":memory:?%s", suffix),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Arrange
-			suffix := "foreign_keys=on&journal_mode=WAL"
-			tmpPath := filepath.Join(os.TempDir(), tc.path)
-			wants := fmt.Sprintf("file:%s?%s", tmpPath, suffix)
-
 			// Act
-			got, err := makeDsn(tmpPath)
+			got, err := makeDsn(tc.path())
 
 			// Assert
 			assert.NoError(t, err)
-			assert.Equal(t, wants, got)
+			assert.Equal(t, tc.wants, got)
 		})
 	}
 }
 
 func TestNew(t *testing.T) {
 	// Arrange
-	file, err := os.CreateTemp(os.TempDir(), "wyd.*****.db")
-	if err != nil {
-		t.Fatal(err)
-	}
-	file.Close()
-	defer os.Remove(file.Name())
-	path := filepath.Join(file.Name())
+	path := ":memory:"
 
 	// Act
 	db, err := New(path)

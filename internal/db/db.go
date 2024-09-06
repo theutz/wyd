@@ -14,6 +14,9 @@ import (
 )
 
 //go:embed migrations/*.sql
+var ddl string
+
+//go:embed migrations/*.sql
 var embedMigrations embed.FS
 
 var sqliteOpts = [][]string{
@@ -41,8 +44,15 @@ func ensureFile(path string) error {
 }
 
 func makeDsn(path string) (string, error) {
-	if err := ensureFile(path); err != nil {
-		return "", err
+	var prefix string
+	if path == ":memory:" {
+		prefix, _ = strings.CutSuffix(path, ":")
+		path = ""
+	} else {
+		if err := ensureFile(path); err != nil {
+			return "", err
+		}
+		prefix = "file"
 	}
 
 	options := ""
@@ -53,7 +63,7 @@ func makeDsn(path string) (string, error) {
 	}
 	options, _ = strings.CutPrefix(options, "&")
 
-	dsn := fmt.Sprintf("file:%s?%s", path, options)
+	dsn := fmt.Sprintf("%s:%s?%s", prefix, path, options)
 
 	return dsn, nil
 }
