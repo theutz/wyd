@@ -22,7 +22,7 @@ func (p *MockProgram) Exit(code int) {
 
 type MockCli struct{}
 
-func Test_Flag_Help(t *testing.T) {
+func TestHelpFlag(t *testing.T) {
 	testCases := []struct {
 		name string
 		args []string
@@ -79,7 +79,7 @@ func Test_Flag_Help(t *testing.T) {
 	}
 }
 
-func Test_Flag_Debug(t *testing.T) {
+func TestDebugFlag(t *testing.T) {
 	testCases := []struct {
 		name  string
 		args  []string
@@ -119,7 +119,7 @@ func Test_Flag_Debug(t *testing.T) {
 	}
 }
 
-func Test_Flag_DatabasePath(t *testing.T) {
+func TestDatabasePathFlag(t *testing.T) {
 	flag := "--database-path"
 	_, currentFile, _, ok := runtime.Caller(0)
 	if !ok {

@@ -10,11 +10,11 @@ processes:
     disabled: false
 
   test:
-    command: gotestsum --watch
+    command: gotestsum ./...
     disabled: false
     is_tty: true
 
   run:
-    command: watchexec -- go run . client
+    command: go run . client
     disabled: false
     is_tty: true

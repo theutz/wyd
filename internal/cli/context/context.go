@@ -5,10 +5,12 @@ import (
 	"database/sql"
 	_ "embed"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/theutz/wyd/internal/db"
+	"github.com/theutz/wyd/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -20,7 +22,7 @@ type Context struct {
 	db          *sql.DB
 	ctx         goctx.Context
 	configPaths []string
-	config      Config
+	config      *Config
 }
 
 func (c *Context) GetDb() *sql.DB {
@@ -35,7 +37,7 @@ func (c *Context) GetConfigPaths() []string {
 	return c.configPaths
 }
 
-func (c *Context) GetConfig() Config {
+func (c *Context) GetConfig() *Config {
 	return c.config
 }
 
@@ -48,16 +50,13 @@ func getConfigPath(paths []string) (string, error) {
 	}
 
 	for i, p := range paths {
-		if p[0:2] == "~/" {
-			d, err := os.UserHomeDir()
-			if err != nil {
-				return "", err
-			}
-			p = filepath.Join(d, p[2:])
-			paths[i] = p
+		p, err := utils.ExpandTildeToHome(p)
+		if err != nil {
+			return "", fmt.Errorf("getting config path %s: %w", p, err)
 		}
+		paths[i] = p
 
-		_, err := os.Stat(p)
+		_, err = os.Stat(p)
 		if os.IsNotExist(err) {
 			break
 		} else if err != nil {
@@ -121,6 +120,11 @@ func New(dbPath string) (*Context, error) {
 		}
 		dbPath = config.DatabasePath
 	}
+	dbPath, err = utils.ExpandTildeToHome(dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("expanding database path %s: %w", dbPath, err)
+	}
+	config.DatabasePath = dbPath
 
 	db, err := db.New(ctx, dbPath)
 	if err != nil {
@@ -131,7 +135,7 @@ func New(dbPath string) (*Context, error) {
 		ctx:         ctx,
 		db:          db,
 		configPaths: configPaths,
-		config:      *config,
+		config:      config,
 	}
 
 	return c, nil

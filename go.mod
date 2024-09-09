@@ -3,6 +3,7 @@ module github.com/theutz/wyd
 go 1.22.6
 
 require (
+	github.com/alecthomas/assert v1.0.0
 	github.com/alecthomas/assert/v2 v2.10.0
 	github.com/alecthomas/kong v0.9.0
 	github.com/alecthomas/kong-yaml v0.2.0
@@ -15,6 +16,7 @@ require (
 )
 
 require (
+	github.com/alecthomas/colour v0.1.0 // indirect
 	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
@@ -27,6 +29,7 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
