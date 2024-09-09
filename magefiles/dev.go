@@ -15,7 +15,7 @@ func (Dev) Up() error {
 		"--watch=magefiles/dev.go",
 		"--",
 		"process-compose",
-		"--keep-project",
+		"--keep-tui",
 	}
 	sh.Run("watchexec", args...)
 	return nil

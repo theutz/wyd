@@ -2,28 +2,19 @@ version: "0.5"
 is_strict: true
 processes:
   tidy:
-    command: go mod tidy -v
+    command: watchexec -- go mod tidy -v
     disabled: false
 
   generate:
-    command: go generate -v ./...
+    command: watchexec -- go generate -v ./...
     disabled: false
-    depends_on:
-      tidy:
-        condition: process_completed_successfully
 
   test:
-    command: watchexec -- go test ./...
+    command: gotestsum --watch
     disabled: false
     is_tty: true
-    depends_on:
-      tidy:
-        condition: process_completed_successfully
 
   run:
     command: watchexec -- go run . client
     disabled: false
     is_tty: true
-    depends_on:
-      generate:
-        condition: process_completed_successfully
