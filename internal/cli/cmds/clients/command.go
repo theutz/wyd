@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
-	"github.com/theutz/wyd/internal/cli/context"
+	"github.com/theutz/wyd/internal/cli/app"
 	"github.com/theutz/wyd/internal/data/clients"
 )
 
@@ -17,7 +17,7 @@ type AddCmd struct {
 	Name string `arg:"" help:"the name of the client"`
 }
 
-func (cmd *AddCmd) Run(app *context.Context) error {
+func (cmd *AddCmd) Run(app *app.Context) error {
 	ctx := app.GetCtx()
 	db := app.GetDb()
 	defer db.Close()
@@ -77,7 +77,7 @@ func printClients(clients []clients.Client) error {
 	return nil
 }
 
-func (cmd *ListCmd) Run(app *context.Context) error {
+func (cmd *ListCmd) Run(app *app.Context) error {
 	db := app.GetDb()
 	q := clients.New(db)
 

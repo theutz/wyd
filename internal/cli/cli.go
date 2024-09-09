@@ -5,8 +5,8 @@ import (
 
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
+	"github.com/theutz/wyd/internal/cli/app"
 	"github.com/theutz/wyd/internal/cli/cmds/clients"
-	"github.com/theutz/wyd/internal/cli/context"
 	"github.com/theutz/wyd/internal/cli/cmds/projects"
 )
 
@@ -47,7 +47,7 @@ func (c *Cli) Value() Value {
 }
 
 func (c *Cli) Run(args ...string) error {
-	ctx, err := context.New(c.Value().DatabasePath)
+	ctx, err := app.New(c.Value().DatabasePath)
 	if err != nil {
 		return err
 	}
