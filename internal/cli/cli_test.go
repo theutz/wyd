@@ -125,7 +125,7 @@ func TestDatabasePathFlag(t *testing.T) {
 	if !ok {
 		panic("couldn't get current file path")
 	}
-	configPath := filepath.Join(filepath.Dir(currentFile), "testdata", "config.yml")
+	configPath := filepath.Clean(filepath.Join(filepath.Dir(currentFile), "context", "config.yml"))
 
 	testCases := []struct {
 		name   string
