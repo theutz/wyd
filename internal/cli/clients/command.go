@@ -79,7 +79,6 @@ func printClients(clients []clients.Client) error {
 
 func (cmd *ListCmd) Run(app *context.Context) error {
 	db := app.GetDb()
-	defer db.Close()
 	q := clients.New(db)
 
 	clients, err := q.ListClients(app.GetCtx())

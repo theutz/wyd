@@ -51,6 +51,7 @@ func (c *Cli) Run(args ...string) error {
 	if err != nil {
 		return err
 	}
+	defer ctx.GetDb().Close()
 
 	k, err := kong.New(
 		c.grammar,
