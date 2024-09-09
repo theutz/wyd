@@ -1,0 +1,19 @@
+version: "0.5"
+processes:
+  test:
+    command: watchexec --color=always -e go -- go test -v ./...
+    disabled: false
+    is_tty: true
+
+  tidy:
+    command: watchexec -e go -- go mod tidy -v
+    disabled: true
+
+  generate:
+    command: watchexec -e go -- go generate -v
+    disabled: true
+
+  client:
+    command: watchexec -- go run . client
+    disabled: false
+    is_tty: true
