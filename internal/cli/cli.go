@@ -5,9 +5,9 @@ import (
 
 	"github.com/alecthomas/kong"
 	kongyaml "github.com/alecthomas/kong-yaml"
-	"github.com/theutz/wyd/internal/cli/clients"
+	"github.com/theutz/wyd/internal/cli/cmds/clients"
 	"github.com/theutz/wyd/internal/cli/context"
-	"github.com/theutz/wyd/internal/cli/projects"
+	"github.com/theutz/wyd/internal/cli/cmds/projects"
 )
 
 type CliRunner interface {
