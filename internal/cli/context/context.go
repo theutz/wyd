@@ -114,6 +114,14 @@ func New(dbPath string) (*Context, error) {
 	}
 
 	ctx := goctx.Background()
+
+	if dbPath == "" {
+		if config.DatabasePath == "" {
+			return nil, errors.New("no database path set")
+		}
+		dbPath = config.DatabasePath
+	}
+
 	db, err := db.New(ctx, dbPath)
 	if err != nil {
 		return nil, err

@@ -3,7 +3,9 @@ package clients
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/theutz/wyd/internal/cli/context"
 	"github.com/theutz/wyd/internal/data/clients"
@@ -46,17 +48,32 @@ func printClients(clients []clients.Client) error {
 		return errors.New("no clients found")
 	}
 
-	rows := [][]string{}
-
-	for _, c := range clients {
-		rows = append(rows, []string{c.Name})
-	}
+	accentColor := lipgloss.ANSIColor(5)
 
 	t := table.New().
-		Headers("Name").
-		Rows(rows...)
+		Headers("ID", "Name").
+		BorderStyle(lipgloss.NewStyle().Foreground(accentColor)).
+		StyleFunc(func(row, col int) lipgloss.Style {
+			s := lipgloss.NewStyle()
+			switch col {
+			case 0:
+				s = s.Width(3)
+			case 1:
+				s = s.Width(20)
+			}
+			switch row {
+			case 0:
+				s = s.Foreground(accentColor)
+			}
+			return s
+		})
 
-	fmt.Println(t.Render())
+	for _, c := range clients {
+		t.Row(strconv.Itoa(int(c.ID)), c.Name)
+	}
+
+	fmt.Println(t)
+
 	return nil
 }
 

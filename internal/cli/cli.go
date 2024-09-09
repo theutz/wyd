@@ -47,8 +47,7 @@ func (c *Cli) Value() Value {
 }
 
 func (c *Cli) Run(args ...string) error {
-	dbPath := ":memory:"
-	ctx, err := context.New(dbPath)
+	ctx, err := context.New(c.Value().DatabasePath)
 	if err != nil {
 		return err
 	}
