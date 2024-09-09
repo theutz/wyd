@@ -12,37 +12,30 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Context interface {
-	GetDb() *sql.DB
-	GetCtx() goctx.Context
-	GetConfigPaths() []string
-	GetConfig() Config
-}
-
 type Config struct {
 	DatabasePath string `yaml:"database-path"`
 }
 
-type context struct {
+type Context struct {
 	db          *sql.DB
 	ctx         goctx.Context
 	configPaths []string
 	config      Config
 }
 
-func (c *context) GetDb() *sql.DB {
+func (c *Context) GetDb() *sql.DB {
 	return c.db
 }
 
-func (c *context) GetCtx() goctx.Context {
+func (c *Context) GetCtx() goctx.Context {
 	return c.ctx
 }
 
-func (c *context) GetConfigPaths() []string {
+func (c *Context) GetConfigPaths() []string {
 	return c.configPaths
 }
 
-func (c *context) GetConfig() Config {
+func (c *Context) GetConfig() Config {
 	return c.config
 }
 
@@ -109,7 +102,7 @@ func loadConfig(paths []string) (*Config, error) {
 	return config, nil
 }
 
-func New(dbPath string) (Context, error) {
+func New(dbPath string) (*Context, error) {
 	configPaths := []string{
 		"~/.config/wyd/config.yml",
 		"~/.config/wyd/config.yaml",
@@ -126,7 +119,7 @@ func New(dbPath string) (Context, error) {
 		return nil, err
 	}
 
-	c := &context{
+	c := &Context{
 		ctx:         ctx,
 		db:          db,
 		configPaths: configPaths,

@@ -6,6 +6,7 @@ require (
 	github.com/alecthomas/assert/v2 v2.10.0
 	github.com/alecthomas/kong v0.9.0
 	github.com/alecthomas/kong-yaml v0.2.0
+	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/charmbracelet/log v0.4.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/pressly/goose/v3 v3.22.0
@@ -16,7 +17,6 @@ require (
 require (
 	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/charmbracelet/lipgloss v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
