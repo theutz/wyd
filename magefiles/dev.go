@@ -16,9 +16,12 @@ func (Dev) Up() error {
 		"--",
 		"process-compose",
 		"--keep-project",
-		"--hide-disabled",
-		"--tui-fs",
 	}
 	sh.Run("watchexec", args...)
+	return nil
+}
+
+func (Dev) Attach() error {
+	sh.Run("process-compose", "attach")
 	return nil
 }

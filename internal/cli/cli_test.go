@@ -1,9 +1,12 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
@@ -45,13 +48,33 @@ func Test_Flag_Help(t *testing.T) {
 			}
 			c := New(p)
 
+			r, w, err := os.Pipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			oldStdout := os.Stdout
+			os.Stdout = w
+			defer func() {
+				os.Stdout = oldStdout
+			}()
+
 			// Act
-			err := c.Run(tc.args...)
+			err = c.Run(tc.args...)
+			w.Close()
+
+			out := strings.Builder{}
+			scanner := bufio.NewScanner(r)
+			for scanner.Scan() {
+				out.Write(scanner.Bytes())
+			}
+
+			r.Close()
 
 			// Assert
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), tc.err)
 			assert.Equal(t, p.exitCode, 0)
+			assert.Contains(t, out.String(), "wyd")
 		})
 	}
 }
@@ -89,7 +112,8 @@ func Test_Flag_Debug(t *testing.T) {
 			err := c.Run(tc.args...)
 
 			// Assert
-			assert.NoError(t, err)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), "parsing kong: expected one of")
 			assert.Equal(t, c.Value().Debug, tc.wants)
 		})
 	}
@@ -104,24 +128,28 @@ func Test_Flag_DatabasePath(t *testing.T) {
 	configPath := filepath.Join(filepath.Dir(currentFile), "testdata", "config.yml")
 
 	testCases := []struct {
-		name  string
-		args  []string
-		wants string
+		name   string
+		args   []string
+		wants  string
+		errMsg string
 	}{
 		{
-			name:  "default value",
-			args:  []string{fmt.Sprintf("%s=%s", flag, configPath)},
-			wants: configPath,
+			name:   "default value",
+			args:   []string{fmt.Sprintf("%s=%s", flag, configPath)},
+			wants:  configPath,
+			errMsg: "parsing kong: expected one of",
 		},
 		{
-			name:  "absolute path",
-			args:  []string{fmt.Sprintf("%s=%s", flag, currentFile)},
-			wants: currentFile,
+			name:   "absolute path",
+			args:   []string{fmt.Sprintf("%s=%s", flag, currentFile)},
+			wants:  currentFile,
+			errMsg: "parsing kong: expected one of",
 		},
 		{
-			name: "no path",
-			args: []string{fmt.Sprintf("%s=", flag)},
-			wants: fmt.Sprintf(
+			name:  "no path",
+			args:  []string{fmt.Sprintf("%s=", flag)},
+			wants: "",
+			errMsg: fmt.Sprintf(
 				`parsing kong: %s: "%s" exists but is a directory`,
 				flag,
 				filepath.Dir(currentFile),
@@ -138,8 +166,7 @@ func Test_Flag_DatabasePath(t *testing.T) {
 			// Act
 			err := c.Run(tc.args...)
 			if err != nil {
-				assert.EqualError(t, err, tc.wants)
-				return
+				assert.Contains(t, err.Error(), tc.errMsg)
 			}
 
 			// Assert

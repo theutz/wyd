@@ -1,19 +1,29 @@
 version: "0.5"
+is_strict: true
 processes:
-  test:
-    command: watchexec --color=always -e go -- go test -v ./...
-    disabled: false
-    is_tty: true
-
   tidy:
-    command: watchexec -e go -- go mod tidy -v
-    disabled: true
+    command: go mod tidy -v
+    disabled: false
 
   generate:
-    command: watchexec -e go -- go generate -v
-    disabled: true
+    command: go generate -v ./...
+    disabled: false
+    depends_on:
+      tidy:
+        condition: process_completed_successfully
 
-  client:
+  test:
+    command: watchexec -- go test ./...
+    disabled: false
+    is_tty: true
+    depends_on:
+      tidy:
+        condition: process_completed_successfully
+
+  run:
     command: watchexec -- go run . client
     disabled: false
     is_tty: true
+    depends_on:
+      generate:
+        condition: process_completed_successfully

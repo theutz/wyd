@@ -79,6 +79,7 @@ func New(ctx context.Context, path string) (*sql.DB, error) {
 	}
 
 	goose.SetBaseFS(embedMigrations)
+	goose.SetLogger(goose.NopLogger())
 
 	if err := goose.SetDialect("sqlite3"); err != nil {
 		return nil, err
