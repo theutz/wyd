@@ -5,7 +5,7 @@ go 1.22.6
 require (
 	github.com/adrg/xdg v0.5.0
 	github.com/alecthomas/assert/v2 v2.10.0
-	github.com/alecthomas/kong v0.9.0
+	github.com/alecthomas/kong v1.1.0
 	github.com/charmbracelet/huh v0.5.2
 	github.com/charmbracelet/lipgloss v0.12.1
 	github.com/charmbracelet/log v0.4.0
