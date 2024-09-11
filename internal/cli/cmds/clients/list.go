@@ -5,8 +5,6 @@ import (
 	"github.com/theutz/wyd/internal/db/clients"
 )
 
-type ListCmd struct{}
-
 func (cmd *ListCmd) Run(app *app.Context) error {
 	db := app.GetDb()
 	q := clients.New(db)

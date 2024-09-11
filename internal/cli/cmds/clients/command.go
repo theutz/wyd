@@ -10,11 +10,6 @@ import (
 	"github.com/theutz/wyd/internal/db/clients"
 )
 
-type ClientsCmd struct {
-	Add  AddCmd  `cmd:"" help:"add a client"`
-	List ListCmd `cmd:"" default:"withargs" help:"list all clients"`
-}
-
 func RenderTable(header []string, rows [][]string) string {
 	if len(rows) == 0 && len(header) == 0 {
 		return ""

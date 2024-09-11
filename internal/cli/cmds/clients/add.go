@@ -5,10 +5,6 @@ import (
 	"github.com/theutz/wyd/internal/db/clients"
 )
 
-type AddCmd struct {
-	Name string `arg:"" help:"the name of the client"`
-}
-
 func (cmd *AddCmd) Run(app *app.Context) error {
 	ctx := app.GetCtx()
 	db := app.GetDb()
