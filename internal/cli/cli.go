@@ -12,10 +12,10 @@ import (
 
 type CliRunner interface {
 	Run(args ...string) error
-	Value() Value
+	GetCmd() RootCmd
 }
 
-type Grammar struct {
+type RootCmd struct {
 	Clients      clients.ClientsCmd   `cmd:"" help:"working with clients" aliases:"client,c"`
 	Projects     projects.ProjectsCmd `cmd:"" help:"working with projects" aliases:"project,p"`
 	Debug        bool                 `short:"v" name:"verbose" help:"enable verbose logging"`
@@ -23,38 +23,36 @@ type Grammar struct {
 }
 
 type Cli struct {
-	grammar *Grammar
+	rootCmd *RootCmd
 	program Program
 }
-
-type Value = Grammar
 
 type Program interface {
 	Exit(code int)
 }
 
 func New(p Program) CliRunner {
-	v := &Grammar{}
+	v := &RootCmd{}
 	c := &Cli{
-		grammar: v,
+		rootCmd: v,
 		program: p,
 	}
 	return c
 }
 
-func (c *Cli) Value() Value {
-	return *c.grammar
+func (c *Cli) GetCmd() RootCmd {
+	return *c.rootCmd
 }
 
 func (c *Cli) Run(args ...string) error {
-	ctx, err := app.New(c.Value().DatabasePath)
+	ctx, err := app.New(c.GetCmd().DatabasePath)
 	if err != nil {
 		return err
 	}
 	defer ctx.GetDb().Close()
 
 	k, err := kong.New(
-		c.grammar,
+		c.rootCmd,
 		kong.Name("wyd"),
 		kong.Description("a program to ask you what you're doing"),
 		kong.Exit(c.program.Exit),

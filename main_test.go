@@ -47,8 +47,8 @@ func (c *MockCli) Run(args ...string) error {
 func (c *MockCli) SetConfigPath(path string) {
 }
 
-func (c *MockCli) Value() cli.Grammar {
-	return cli.Grammar{}
+func (c *MockCli) GetCmd() cli.RootCmd {
+	return cli.RootCmd{}
 }
 
 func TestRun(t *testing.T) {
