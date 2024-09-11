@@ -2,7 +2,7 @@ package clients
 
 import (
 	"github.com/theutz/wyd/internal/cli/app"
-	"github.com/theutz/wyd/internal/data/clients"
+	"github.com/theutz/wyd/internal/db/clients"
 )
 
 type ListCmd struct{}

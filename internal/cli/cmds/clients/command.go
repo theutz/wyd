@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
-	"github.com/theutz/wyd/internal/data/clients"
+	"github.com/theutz/wyd/internal/db/clients"
 )
 
 type ClientsCmd struct {

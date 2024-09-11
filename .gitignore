@@ -2,5 +2,3 @@
 
 dist/
 wyd
-internal/data/*/*.go
-!internal/data/*/*_test.go
