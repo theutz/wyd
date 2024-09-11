@@ -35,8 +35,10 @@
 #       runner: go run
 
 pre-commit:
-  parallel: true
+  parallel: false
   commands:
+    go-generate:
+      run: go generate ./...
     go-vet:
       tags: style
       files: git ls-files -m
