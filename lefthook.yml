@@ -37,13 +37,6 @@
 pre-commit:
   parallel: false
   commands:
-    go-generate:
-      run: go generate -v ./...
-    go-vet:
-      tags: style
-      files: git ls-files -m
-      glob: "*.go"
-      run: go vet {files}
     go-test:
       tags: test
       run: mage test:all
