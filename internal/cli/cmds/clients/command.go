@@ -43,15 +43,15 @@ type ClientsCmd struct {
 	List ListCmd `cmd:"" default:"withargs" help:"list all clients"`
 }
 
-func printClients(clients []clients.Client) error {
-	if len(clients) < 1 {
-		return errors.New("no clients found")
+func RenderTable(header []string, rows [][]string) string {
+	if len(rows) == 0 && len(header) == 0 {
+		return ""
 	}
 
 	accentColor := lipgloss.ANSIColor(5)
 
 	t := table.New().
-		Headers("ID", "Name").
+		Rows(rows...).
 		BorderStyle(lipgloss.NewStyle().Foreground(accentColor)).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			s := lipgloss.NewStyle()
@@ -68,9 +68,27 @@ func printClients(clients []clients.Client) error {
 			return s
 		})
 
-	for _, c := range clients {
-		t.Row(strconv.Itoa(int(c.ID)), c.Name)
+	if len(header) > 0 {
+		t = t.Headers(header...)
 	}
+
+	return t.Render()
+}
+
+func printClients(clients []clients.Client) error {
+	if len(clients) < 1 {
+		return errors.New("no clients found")
+	}
+
+	header := []string{"ID", "Name"}
+	rows := [][]string{}
+
+	for _, c := range clients {
+		rows = append(rows, []string{strconv.Itoa(int(c.ID)), c.Name})
+	}
+
+	t := RenderTable(header, rows)
+	fmt.Println(t)
 
 	fmt.Println(t)
 
