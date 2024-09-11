@@ -57,7 +57,5 @@ func printClients(clients []clients.Client) error {
 	t := RenderTable(header, rows)
 	fmt.Println(t)
 
-	fmt.Println(t)
-
 	return nil
 }

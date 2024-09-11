@@ -35,7 +35,7 @@
 #       runner: go run
 
 pre-commit:
-  parallel: false
+  parallel: true
   commands:
     go-test:
       tags: test

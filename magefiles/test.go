@@ -19,6 +19,27 @@ func (Test) All() error {
 	return nil
 }
 
+// output from all list commands
+func (Test) State() error {
+	mg.Deps(Tidy)
+
+	cmds := [][]string{
+		{"clients"},
+		{"projects"},
+	}
+
+	for _, c := range cmds {
+		args := []string{"run", "."}
+		args = append(args, c...)
+		err := sh.RunV("go", args...)
+		if err != nil {
+			return mg.Fatal(1, err)
+		}
+	}
+
+	return nil
+}
+
 func Generate() error {
 	args := []string{"generate"}
 	if mg.Verbose() {
