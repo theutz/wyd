@@ -38,7 +38,7 @@ pre-commit:
   parallel: false
   commands:
     go-generate:
-      run: go generate ./...
+      run: go generate -v ./...
     go-vet:
       tags: style
       files: git ls-files -m
