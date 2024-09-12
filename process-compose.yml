@@ -8,13 +8,3 @@ processes:
   generate:
     command: watchexec -- go generate -v ./...
     disabled: false
-
-  test:
-    command: gotestsum ./...
-    disabled: false
-    is_tty: true
-
-  run:
-    command: go run . client
-    disabled: false
-    is_tty: true

@@ -16,8 +16,8 @@ type MockProg struct {
 	log      *log.Logger
 }
 
-// GetArgs implements Program.
-func (p *MockProg) GetArgs() []string {
+// Args implements Program.
+func (p *MockProg) Args() []string {
 	return p.args
 }
 

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	goctx "context"
 	"database/sql"
 	_ "embed"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/theutz/wyd/internal/db"
+	"github.com/theutz/wyd/internal/db/queries"
 	"github.com/theutz/wyd/internal/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -25,20 +27,25 @@ type Context struct {
 	config      *Config
 }
 
-func (c *Context) GetDb() *sql.DB {
+func (c *Context) Db() *sql.DB {
 	return c.db
 }
 
-func (c *Context) GetCtx() goctx.Context {
+func (c *Context) Ctx() goctx.Context {
 	return c.ctx
 }
 
-func (c *Context) GetConfigPaths() []string {
+func (c *Context) ConfigPaths() []string {
 	return c.configPaths
 }
 
-func (c *Context) GetConfig() *Config {
+func (c *Context) Config() *Config {
 	return c.config
+}
+
+func (c *Context) Queries() (context.Context, *queries.Queries) {
+	q := queries.New(c.db)
+	return c.ctx, q
 }
 
 //go:embed config.yml

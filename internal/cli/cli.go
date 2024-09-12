@@ -40,14 +40,14 @@ func (c *Cli) Run(args ...string) error {
 	if err != nil {
 		return err
 	}
-	defer ctx.GetDb().Close()
+	defer ctx.Db().Close()
 
 	k, err := kong.New(
 		c.rootCmd,
 		kong.Name("wyd"),
 		kong.Description("a program to ask you what you're doing"),
 		kong.Exit(c.program.Exit),
-		kong.Configuration(kongyaml.Loader, ctx.GetConfigPaths()...),
+		kong.Configuration(kongyaml.Loader, ctx.ConfigPaths()...),
 	)
 	if err != nil {
 		return fmt.Errorf("creating kong: %w", err)

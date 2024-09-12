@@ -6,40 +6,28 @@ import (
 
 	"github.com/theutz/wyd/internal/cli/app"
 	"github.com/theutz/wyd/internal/cli/out"
-	"github.com/theutz/wyd/internal/db/queries"
 )
 
-func (cmd *AddCmd) Run(app *app.Context) error {
-	ctx := app.Ctx()
-	db := app.Db()
-	defer db.Close()
-	q := queries.New(db)
+func (cmd *DeleteCmd) Run(app *app.Context) error {
+	ctx, q := app.Queries()
 
-	name := cmd.Name
-
-	client, err := q.AddClient(ctx, name)
+	client, err := q.DeleteClient(ctx, cmd.Name)
 	if err != nil {
 		return err
 	}
 	cmd.client = client
 
-	err = cmd.Output()
-	if err != nil {
-		return err
-	}
+	cmd.Ouptut()
 
 	return nil
 }
 
-func (cmd *AddCmd) Output() error {
+func (cmd *DeleteCmd) Ouptut() {
 	id := strconv.Itoa(int(cmd.client.ID))
 	client := map[string]string{
 		"ID":   id,
 		"Name": cmd.client.Name,
 	}
-
 	record := out.Record(client)
 	fmt.Println(record)
-
-	return nil
 }

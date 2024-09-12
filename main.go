@@ -10,7 +10,7 @@ import (
 type Program interface {
 	Exit(code int)
 	SetArgs(args []string)
-	GetArgs() []string
+	Args() []string
 	GetLogger() *log.Logger
 }
 
@@ -38,7 +38,7 @@ func (p *Prog) SetArgs(args []string) {
 	p.args = args
 }
 
-func (p *Prog) GetArgs() []string {
+func (p *Prog) Args() []string {
 	return p.args
 }
 
@@ -48,7 +48,7 @@ func (p *Prog) GetLogger() *log.Logger {
 
 func Run(p Program, c cli.CliRunner) {
 	l := p.GetLogger()
-	if err := c.Run(p.GetArgs()...); err != nil {
+	if err := c.Run(p.Args()...); err != nil {
 		l.Error(err)
 		p.Exit(1)
 		return

@@ -11,10 +11,10 @@ import (
 )
 
 func (cmd *ListCmd) Run(app *app.Context) error {
-	db := app.GetDb()
+	db := app.Db()
 	q := queries.New(db)
 
-	clients, err := q.ListClients(app.GetCtx())
+	clients, err := q.ListClients(app.Ctx())
 	if err != nil {
 		return err
 	}

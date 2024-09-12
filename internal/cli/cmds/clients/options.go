@@ -5,8 +5,9 @@ import (
 )
 
 type ClientsCmd struct {
-	Add  AddCmd  `cmd:"" help:"add a client"`
-	List ListCmd `cmd:"" default:"withargs" help:"list all clients"`
+	Add    AddCmd    `cmd:"" help:"add a client"`
+	List   ListCmd   `cmd:"" default:"withargs" help:"list all clients"`
+	Delete DeleteCmd `cmd:"" help:"delete a client"`
 }
 
 type AddCmd struct {
@@ -16,4 +17,9 @@ type AddCmd struct {
 
 type ListCmd struct {
 	clients []queries.Client
+}
+
+type DeleteCmd struct {
+	Name   string `arg:"" help:"the name of the client"`
+	client queries.Client
 }

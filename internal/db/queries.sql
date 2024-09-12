@@ -7,11 +7,21 @@ RETURNING *;
 SELECT *
 FROM clients;
 
--- name: ProjectsCount :one
-SELECT COUNT(*)
-FROM projects;
+-- name: DeleteClient :one
+DELETE FROM clients
+WHERE name LIKE ?
+RETURNING *;
 
 -- name: AddProject :one
 INSERT INTO projects (name, client_id)
 VALUES (?, ?)
+RETURNING *;
+
+-- name: ListProjects :one
+SELECT *
+FROM projects;
+
+-- name: DeleteProject :one
+DELETE FROM projects
+WHERE id = ?
 RETURNING *;
