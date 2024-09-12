@@ -1,6 +1,8 @@
 package clients
 
-import "github.com/theutz/wyd/internal/db/clients"
+import (
+	"github.com/theutz/wyd/internal/db/queries"
+)
 
 type ClientsCmd struct {
 	Add  AddCmd  `cmd:"" help:"add a client"`
@@ -9,9 +11,9 @@ type ClientsCmd struct {
 
 type AddCmd struct {
 	Name   string `arg:"" help:"the name of the client"`
-	client clients.Client
+	client queries.Client
 }
 
 type ListCmd struct {
-	clients []clients.Client
+	clients []queries.Client
 }

@@ -1,4 +1,4 @@
-package clients
+package queries
 
 import (
 	"context"

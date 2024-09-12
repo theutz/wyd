@@ -6,14 +6,14 @@ import (
 
 	"github.com/theutz/wyd/internal/cli/app"
 	"github.com/theutz/wyd/internal/cli/out"
-	"github.com/theutz/wyd/internal/db/clients"
+	"github.com/theutz/wyd/internal/db/queries"
 )
 
 func (cmd *AddCmd) Run(app *app.Context) error {
 	ctx := app.GetCtx()
 	db := app.GetDb()
 	defer db.Close()
-	q := clients.New(db)
+	q := queries.New(db)
 
 	name := cmd.Name
 

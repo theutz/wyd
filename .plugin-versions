@@ -3,6 +3,7 @@ direnv               https://github.com/asdf-community/asdf-direnv.git          
 doppler              https://github.com/takutakahashi/asdf-doppler.git          b8a3f0c
 golang               https://github.com/asdf-community/asdf-golang.git          962a601
 goose                https://github.com/samhvw8/asdf-goose                      473fa40
+gotestsum            https://github.com/hpcsc/asdf-gotestsum.git                e74c3a0
 gum                  https://github.com/lwiechec/asdf-gum                       9220d1f
 hugo                 https://github.com/NeoHsu/asdf-hugo.git                    125ce37
 just                 https://github.com/olofvndrhr/asdf-just.git                3f907ee

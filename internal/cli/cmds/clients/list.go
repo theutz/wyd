@@ -7,12 +7,12 @@ import (
 
 	"github.com/theutz/wyd/internal/cli/app"
 	"github.com/theutz/wyd/internal/cli/out"
-	"github.com/theutz/wyd/internal/db/clients"
+	"github.com/theutz/wyd/internal/db/queries"
 )
 
 func (cmd *ListCmd) Run(app *app.Context) error {
 	db := app.GetDb()
-	q := clients.New(db)
+	q := queries.New(db)
 
 	clients, err := q.ListClients(app.GetCtx())
 	if err != nil {
