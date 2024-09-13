@@ -1,4 +1,4 @@
-package queries
+package db
 
 import (
 	"context"
@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
-	"github.com/theutz/wyd/internal/db"
+	"github.com/theutz/wyd/internal/db/queries"
 )
 
-func makeQ(t *testing.T) (context.Context, *sql.DB, *Queries) {
+func makeQ(t *testing.T) (context.Context, *sql.DB, *queries.Queries) {
 	t.Helper()
 
 	ctx := context.Background()
-	db, err := db.New(ctx, ":memory:")
+	db, err := New(ctx, ":memory:")
 	assert.NoError(t, err)
-	q := New(db)
+	q := queries.New(db)
 
 	return ctx, db, q
 }
@@ -37,7 +37,7 @@ func TestListClients(t *testing.T) {
 	testCases := []struct {
 		name         string
 		client_names []string
-		wants        []Client
+		wants        []queries.Client
 	}{
 		{
 			name:         "no clients",
@@ -47,12 +47,12 @@ func TestListClients(t *testing.T) {
 		{
 			name:         "one client",
 			client_names: []string{"Delegator"},
-			wants:        []Client{{ID: 1, Name: "Delegator"}},
+			wants:        []queries.Client{{ID: 1, Name: "Delegator"}},
 		},
 		{
 			name:         "multiple clients",
 			client_names: []string{"Huey", "Dewy", "Louis"},
-			wants: []Client{
+			wants: []queries.Client{
 				{ID: 1, Name: "Huey"},
 				{ID: 2, Name: "Dewy"},
 				{ID: 3, Name: "Louis"},

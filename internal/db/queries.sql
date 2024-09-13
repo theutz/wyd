@@ -17,7 +17,7 @@ INSERT INTO projects (name, client_id)
 VALUES (?, ?)
 RETURNING *;
 
--- name: ListProjects :one
+-- name: ListProjects :many
 SELECT *
 FROM projects;
 
