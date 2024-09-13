@@ -3,10 +3,8 @@ package clients
 import (
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/theutz/wyd/internal/cli/app"
-	"github.com/theutz/wyd/internal/cli/out"
 	"github.com/theutz/wyd/internal/db/queries"
 )
 
@@ -17,7 +15,6 @@ func (cmd *AddClientCmd) Run(app *app.Context) error {
 	if err != nil {
 		return err
 	}
-	cmd.client = client
 
 	fmt.Println(client.Render())
 
@@ -47,29 +44,19 @@ func (cmd *DeleteClientsCmd) Run(app *app.Context) error {
 	switch {
 	case cmd.Id != 0:
 		client, err = q.DeleteClient(ctx, cmd.Id)
+		if err != nil {
+			return fmt.Errorf("error: while deleting client by id: %w", err)
+		}
 	case cmd.Name != "":
 		client, err = q.DeleteClientByName(ctx, cmd.Name)
+		if err != nil {
+			return fmt.Errorf("error: while deleting client by name: %w", err)
+		}
 	default:
-		return errors.New("client not found")
+		return errors.New("error: client not found")
 	}
 
-	if err != nil {
-		return err
-	}
-	cmd.client = client
-
-	// TODO: Create renderer
-	cmd.Ouptut()
+	fmt.Println(client.Render())
 
 	return nil
-}
-
-func (cmd *DeleteClientsCmd) Ouptut() {
-	id := strconv.Itoa(int(cmd.client.ID))
-	client := map[string]string{
-		"ID":   id,
-		"Name": cmd.client.Name,
-	}
-	record := out.Record(client)
-	fmt.Println(record)
 }

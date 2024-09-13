@@ -1,9 +1,9 @@
 package projects
 
 type ProjectsCmd struct {
-	Add    AddProjectsCmd    `cmd:"" help:"add a project"`
+	Add    AddProjectsCmd    `cmd:"" aliases:"a" help:"add a project"`
 	List   ListProjectsCmd   `cmd:"" default:"withargs" help:"list all projects"`
-	Delete DeleteProjectsCmd `cmd:"" help:"delete a project"`
+	Delete DeleteProjectsCmd `cmd:"" aliases:"d" help:"delete a project"`
 }
 
 type AddProjectsCmd struct {
