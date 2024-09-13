@@ -10,7 +10,7 @@ import (
 
 type CliRunner interface {
 	Run(args ...string) error
-	GetCmd() RootCmd
+	Cmd() RootCmd
 }
 
 type Cli struct {
@@ -31,12 +31,13 @@ func New(p Program) CliRunner {
 	return c
 }
 
-func (c *Cli) GetCmd() RootCmd {
+func (c *Cli) Cmd() RootCmd {
 	return *c.rootCmd
 }
 
+// TODO: Extract this to the main package
 func (c *Cli) Run(args ...string) error {
-	ctx, err := app.New(c.GetCmd().DatabasePath)
+	ctx, err := app.New(c.Cmd().DatabasePath)
 	if err != nil {
 		return err
 	}

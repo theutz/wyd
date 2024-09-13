@@ -114,7 +114,7 @@ func TestDebugFlag(t *testing.T) {
 			// Assert
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "parsing kong: expected one of")
-			assert.Equal(t, c.GetCmd().Debug, tc.wants)
+			assert.Equal(t, c.Cmd().Debug, tc.wants)
 		})
 	}
 }
@@ -170,7 +170,7 @@ func TestDatabasePathFlag(t *testing.T) {
 			}
 
 			// Assert
-			assert.Equal(t, c.GetCmd().DatabasePath, tc.wants)
+			assert.Equal(t, c.Cmd().DatabasePath, tc.wants)
 		})
 	}
 }

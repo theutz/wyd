@@ -1,4 +1,4 @@
-package main
+package wyd
 
 import (
 	"fmt"
@@ -47,7 +47,7 @@ func (c *MockCli) Run(args ...string) error {
 func (c *MockCli) SetConfigPath(path string) {
 }
 
-func (c *MockCli) GetCmd() cli.RootCmd {
+func (c *MockCli) Cmd() cli.RootCmd {
 	return cli.RootCmd{}
 }
 
