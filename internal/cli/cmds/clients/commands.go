@@ -11,74 +11,29 @@ import (
 )
 
 func (cmd *AddClientCmd) Run(app *app.Context) error {
-	ctx := app.Ctx()
-	db := app.Db()
-	defer db.Close()
-	q := queries.New(db)
+	ctx, q := app.Queries()
 
-	name := cmd.Name
-
-	client, err := q.AddClient(ctx, name)
+	client, err := q.AddClient(ctx, cmd.Name)
 	if err != nil {
 		return err
 	}
 	cmd.client = client
 
-	err = cmd.Output()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (cmd *AddClientCmd) Output() error {
-	id := strconv.Itoa(int(cmd.client.ID))
-	client := map[string]string{
-		"ID":   id,
-		"Name": cmd.client.Name,
-	}
-
-	record := out.Record(client)
-	fmt.Println(record)
+	fmt.Println(client.Render())
 
 	return nil
 }
 
 func (cmd *ListClientsCmd) Run(app *app.Context) error {
-	db := app.Db()
-	q := queries.New(db)
+	ctx, q := app.Queries()
 
-	clients, err := q.ListClients(app.Ctx())
+	clients, err := q.ListClients(ctx)
 	if err != nil {
 		return err
 	}
 
-	cmd.clients = clients
-
-	if err := cmd.Print(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (cmd *ListClientsCmd) Print() error {
-	if len(cmd.clients) < 1 {
-		return errors.New("no clients found")
-	}
-
-	headers := []string{"ID", "Name"}
-	rows := [][]string{}
-
-	for _, c := range cmd.clients {
-		id := strconv.Itoa(int(c.ID))
-		row := []string{id, c.Name}
-		rows = append(rows, row)
-	}
-
-	t := out.Table(headers, rows)
-	fmt.Println(t)
+	c := queries.Clients(clients)
+	fmt.Println(c.Render())
 
 	return nil
 }
@@ -103,6 +58,7 @@ func (cmd *DeleteClientsCmd) Run(app *app.Context) error {
 	}
 	cmd.client = client
 
+	// TODO: Create renderer
 	cmd.Ouptut()
 
 	return nil

@@ -1,2 +1,3 @@
-*/*.go
-!*/*_test.go
+queries/db.go
+queries/*.sql.go
+queries/models.go
