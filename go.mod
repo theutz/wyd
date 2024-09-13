@@ -5,7 +5,7 @@ go 1.22.6
 require (
 	github.com/alecthomas/assert v1.0.0
 	github.com/alecthomas/assert/v2 v2.10.0
-	github.com/alecthomas/kong v0.9.0
+	github.com/alecthomas/kong v1.2.1
 	github.com/alecthomas/kong-yaml v0.2.0
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/charmbracelet/lipgloss v0.10.0
