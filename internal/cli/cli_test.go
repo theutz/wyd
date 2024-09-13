@@ -46,11 +46,7 @@ func TestHelpFlag(t *testing.T) {
 			// Assert
 			assert.Error(t, err)
 			assert.Equal(t, p.exitCode, 0)
-			cupaloy.SnapshotT(t, out)
-			err = cupaloy.SnapshotMulti("err", err)
-			if err != nil {
-				t.Fatal(err)
-			}
+			cupaloy.SnapshotT(t, out, err)
 		})
 	}
 }
@@ -89,8 +85,8 @@ func TestDebugFlag(t *testing.T) {
 
 			// Assert
 			assert.Error(t, err)
-			cupaloy.SnapshotT(t, err)
 			assert.Equal(t, tc.wants, c.Cmd().Debug)
+			cupaloy.SnapshotT(t, err)
 		})
 	}
 }
@@ -133,12 +129,10 @@ func TestDatabasePathFlag(t *testing.T) {
 
 			// Act
 			err := c.Run(tc.args...)
-			if err != nil {
-				cupaloy.SnapshotMulti("err", err)
-			}
 
 			// Assert
 			assert.Equal(t, tc.wants, c.Cmd().DatabasePath)
+			cupaloy.SnapshotT(t, err)
 		})
 	}
 }

@@ -37,3 +37,4 @@ Commands:
 
 Run "wyd <command> --help" for more information on a command.
 
+(*fmt.wrapError)(parsing kong: expected one of "clients",  "projects",  "tasks")
