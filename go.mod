@@ -7,6 +7,7 @@ require (
 	github.com/alecthomas/assert/v2 v2.10.0
 	github.com/alecthomas/kong v0.9.0
 	github.com/alecthomas/kong-yaml v0.2.0
+	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/charmbracelet/log v0.4.0
 	github.com/jaswdr/faker v1.19.1
@@ -20,6 +21,7 @@ require (
 	github.com/alecthomas/colour v0.1.0 // indirect
 	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
@@ -29,6 +31,7 @@ require (
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect

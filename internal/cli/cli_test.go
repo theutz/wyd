@@ -1,15 +1,14 @@
 package cli
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
+	"github.com/bradleyjkemp/cupaloy"
+	"github.com/theutz/wyd/internal/utils"
 )
 
 type MockProgram struct {
@@ -40,6 +39,7 @@ func TestHelpFlag(t *testing.T) {
 		},
 	}
 
+	// TODO: Refactor this with snapshots
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Arrange
@@ -48,33 +48,17 @@ func TestHelpFlag(t *testing.T) {
 			}
 			c := New(p)
 
-			r, w, err := os.Pipe()
-			if err != nil {
-				t.Fatal(err)
-			}
-			oldStdout := os.Stdout
-			os.Stdout = w
-			defer func() {
-				os.Stdout = oldStdout
-			}()
-
 			// Act
-			err = c.Run(tc.args...)
-			w.Close()
-
-			out := strings.Builder{}
-			scanner := bufio.NewScanner(r)
-			for scanner.Scan() {
-				out.Write(scanner.Bytes())
-			}
-
-			r.Close()
+			out, err := utils.CaptureOutput(t, func() error {
+				return c.Run(tc.args...)
+			})
 
 			// Assert
+			cupaloy.SnapshotT(t, out)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), tc.err)
 			assert.Equal(t, p.exitCode, 0)
-			assert.Contains(t, out.String(), "wyd")
+			assert.Contains(t, out, "wyd")
 		})
 	}
 }

@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
+	"github.com/bradleyjkemp/cupaloy"
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/cli"
+	"github.com/theutz/wyd/internal/utils"
 )
 
 type MockProg struct {
@@ -82,9 +84,14 @@ func TestRun(t *testing.T) {
 			c := &MockCli{}
 
 			// Act
-			Run(p, c)
+			out, err := utils.CaptureOutput(t, func() error {
+				Run(p, c)
+				return nil
+			})
 
 			// Assert
+			cupaloy.SnapshotT(t, out)
+			assert.NoError(t, err)
 			assert.Equal(t, p.exitCode, tc.exitCode)
 		})
 	}
