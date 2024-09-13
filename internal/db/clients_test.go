@@ -60,7 +60,7 @@ func TestDeleteClient(t *testing.T) {
 	ctx, q, clients := mkClients(t, count)
 
 	// Act
-	_, err := q.DeleteClient(ctx, clients[1].Name)
+	_, err := q.DeleteClient(ctx, clients[1].ID)
 
 	// Assert
 	assert.NoError(t, err)

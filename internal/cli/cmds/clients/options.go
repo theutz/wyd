@@ -11,7 +11,7 @@ type ClientsCmd struct {
 }
 
 type AddCmd struct {
-	Name   string `arg:"" help:"the name of the client"`
+	Name   string `short:"n" required:"" help:"the name of the client"`
 	client queries.Client
 }
 
@@ -20,6 +20,7 @@ type ListCmd struct {
 }
 
 type DeleteCmd struct {
-	Name   string `arg:"" help:"the name of the client"`
+	Name   string `short:"n" xor:"id" required:"" help:"the name of the client"`
+	Id     int64  `short:"i" xor:"id" required:"" help:"the id of the client"`
 	client queries.Client
 }
