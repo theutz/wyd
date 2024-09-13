@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"github.com/theutz/wyd/internal/cli/cmds/clients"

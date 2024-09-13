@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"fmt"
@@ -11,15 +11,9 @@ import (
 	"github.com/theutz/wyd/internal/utils"
 )
 
-type MockProgram struct {
-	exitCode int
-}
-
 func (p *MockProgram) Exit(code int) {
 	p.exitCode = code
 }
-
-type MockCli struct{}
 
 func TestHelpFlag(t *testing.T) {
 	testCases := []struct {
@@ -97,7 +91,7 @@ func TestDatabasePathFlag(t *testing.T) {
 	if !ok {
 		panic("couldn't get current file path")
 	}
-	configPath := filepath.Clean(filepath.Join(filepath.Dir(currentFile), "app", "config.yml"))
+	configPath := filepath.Clean(filepath.Join(filepath.Dir(currentFile), "internal", "cli", "app", "config.yml"))
 
 	testCases := []struct {
 		name  string

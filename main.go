@@ -1,10 +1,9 @@
-package wyd
+package main
 
 import (
 	"os"
 
 	"github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/cli"
 )
 
 type Program interface {
@@ -49,7 +48,7 @@ func (p *program) ExitCode() int {
 	return p.exitCode
 }
 
-func Run(p Program, c cli.CliRunner) {
+func Init(p Program, c CliRunner) {
 	l := p.Logger()
 	if err := c.Run(p.Args()...); err != nil {
 		l.Error(err)
@@ -67,6 +66,6 @@ func main() {
 		args,
 		logger,
 	)
-	c := cli.New(p)
-	Run(p, c)
+	c := New(p)
+	Init(p, c)
 }

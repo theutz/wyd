@@ -1,4 +1,4 @@
-package wyd
+package main
 
 import (
 	"fmt"
@@ -8,7 +8,6 @@ import (
 	"github.com/alecthomas/assert/v2"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/cli"
 	"github.com/theutz/wyd/internal/utils"
 )
 
@@ -16,10 +15,6 @@ type MockProgram program
 
 func (p *MockProgram) Args() []string {
 	return p.args
-}
-
-func (p *MockProgram) Exit(code int) {
-	p.exitCode = code
 }
 
 func (p *MockProgram) ExitCode() int {
@@ -42,8 +37,8 @@ func (c *MockCli) Run(args ...string) error {
 func (c *MockCli) SetConfigPath(path string) {
 }
 
-func (c *MockCli) Cmd() cli.RootCmd {
-	return cli.RootCmd{}
+func (c *MockCli) Cmd() RootCmd {
+	return RootCmd{}
 }
 
 func TestRun(t *testing.T) {
@@ -76,7 +71,7 @@ func TestRun(t *testing.T) {
 
 			// Act
 			out, err := utils.CaptureOutput(t, func() error {
-				Run(p, c)
+				Init(p, c)
 				return nil
 			})
 

@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"fmt"
@@ -16,10 +16,6 @@ type CliRunner interface {
 type Cli struct {
 	rootCmd *RootCmd
 	program Program
-}
-
-type Program interface {
-	Exit(code int)
 }
 
 func New(p Program) CliRunner {
