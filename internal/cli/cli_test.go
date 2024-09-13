@@ -25,21 +25,11 @@ func TestHelpFlag(t *testing.T) {
 	testCases := []struct {
 		name string
 		args []string
-		err  string
 	}{
-		{
-			name: "long",
-			args: []string{"--help"},
-			err:  "parsing kong: expected one of",
-		},
-		{
-			name: "short",
-			args: []string{"-h"},
-			err:  "parsing kong: expected one of",
-		},
+		{"long", []string{"--help"}},
+		{"short", []string{"-h"}},
 	}
 
-	// TODO: Refactor this with snapshots
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Arrange
@@ -54,11 +44,13 @@ func TestHelpFlag(t *testing.T) {
 			})
 
 			// Assert
-			cupaloy.SnapshotT(t, out)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), tc.err)
 			assert.Equal(t, p.exitCode, 0)
-			assert.Contains(t, out, "wyd")
+			cupaloy.SnapshotT(t, out)
+			err = cupaloy.SnapshotMulti("err", err)
+			if err != nil {
+				t.Fatal(err)
+			}
 		})
 	}
 }
@@ -97,8 +89,8 @@ func TestDebugFlag(t *testing.T) {
 
 			// Assert
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "parsing kong: expected one of")
-			assert.Equal(t, c.Cmd().Debug, tc.wants)
+			cupaloy.SnapshotT(t, err)
+			assert.Equal(t, tc.wants, c.Cmd().Debug)
 		})
 	}
 }
@@ -112,32 +104,24 @@ func TestDatabasePathFlag(t *testing.T) {
 	configPath := filepath.Clean(filepath.Join(filepath.Dir(currentFile), "app", "config.yml"))
 
 	testCases := []struct {
-		name   string
-		args   []string
-		wants  string
-		errMsg string
+		name  string
+		args  []string
+		wants string
 	}{
 		{
-			name:   "default value",
-			args:   []string{fmt.Sprintf("%s=%s", flag, configPath)},
-			wants:  configPath,
-			errMsg: "parsing kong: expected one of",
+			name:  "default value",
+			args:  []string{fmt.Sprintf("%s=%s", flag, configPath)},
+			wants: configPath,
 		},
 		{
-			name:   "absolute path",
-			args:   []string{fmt.Sprintf("%s=%s", flag, currentFile)},
-			wants:  currentFile,
-			errMsg: "parsing kong: expected one of",
+			name:  "absolute path",
+			args:  []string{fmt.Sprintf("%s=%s", flag, currentFile)},
+			wants: currentFile,
 		},
 		{
 			name:  "no path",
 			args:  []string{fmt.Sprintf("%s=", flag)},
 			wants: "",
-			errMsg: fmt.Sprintf(
-				`parsing kong: %s: "%s" exists but is a directory`,
-				flag,
-				filepath.Dir(currentFile),
-			),
 		},
 	}
 
@@ -150,11 +134,11 @@ func TestDatabasePathFlag(t *testing.T) {
 			// Act
 			err := c.Run(tc.args...)
 			if err != nil {
-				assert.Contains(t, err.Error(), tc.errMsg)
+				cupaloy.SnapshotMulti("err", err)
 			}
 
 			// Assert
-			assert.Equal(t, c.Cmd().DatabasePath, tc.wants)
+			assert.Equal(t, tc.wants, c.Cmd().DatabasePath)
 		})
 	}
 }

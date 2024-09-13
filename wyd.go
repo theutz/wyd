@@ -9,45 +9,48 @@ import (
 
 type Program interface {
 	Exit(code int)
-	SetArgs(args []string)
+	ExitCode() int
 	Args() []string
-	GetLogger() *log.Logger
+	Logger() *log.Logger
 }
 
-type Prog struct {
-	args []string
-	log  *log.Logger
+type program struct {
+	args     []string
+	logger   *log.Logger
+	exitCode int
 }
 
-func NewProg() *Prog {
-	l := log.New(os.Stderr)
-	l.SetPrefix("wyd")
+func NewProg(args []string, logger *log.Logger) Program {
+	logger.SetPrefix("wyd")
 
-	p := &Prog{
-		log: l,
+	p := &program{
+		args:     args,
+		logger:   logger,
+		exitCode: -1,
 	}
 
 	return p
 }
 
-func (p *Prog) Exit(code int) {
+func (p *program) Exit(code int) {
+	p.exitCode = code
 	os.Exit(code)
 }
 
-func (p *Prog) SetArgs(args []string) {
-	p.args = args
-}
-
-func (p *Prog) Args() []string {
+func (p *program) Args() []string {
 	return p.args
 }
 
-func (p *Prog) GetLogger() *log.Logger {
-	return p.log
+func (p *program) Logger() *log.Logger {
+	return p.logger
+}
+
+func (p *program) ExitCode() int {
+	return p.exitCode
 }
 
 func Run(p Program, c cli.CliRunner) {
-	l := p.GetLogger()
+	l := p.Logger()
 	if err := c.Run(p.Args()...); err != nil {
 		l.Error(err)
 		p.Exit(1)
@@ -58,8 +61,12 @@ func Run(p Program, c cli.CliRunner) {
 }
 
 func main() {
-	p := NewProg()
-	p.SetArgs(os.Args[1:])
+	args := os.Args[1:]
+	logger := log.New(os.Stderr)
+	p := NewProg(
+		args,
+		logger,
+	)
 	c := cli.New(p)
 	Run(p, c)
 }

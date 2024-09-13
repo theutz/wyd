@@ -12,29 +12,22 @@ import (
 	"github.com/theutz/wyd/internal/utils"
 )
 
-type MockProg struct {
-	exitCode int
-	args     []string
-	log      *log.Logger
-}
+type MockProgram program
 
-// Args implements Program.
-func (p *MockProg) Args() []string {
+func (p *MockProgram) Args() []string {
 	return p.args
 }
 
-// GetLogger implements Program.
-func (p *MockProg) GetLogger() *log.Logger {
-	return p.log
-}
-
-// SetArgs implements Program.
-func (p *MockProg) SetArgs(args []string) {
-	p.args = args
-}
-
-func (p *MockProg) Exit(code int) {
+func (p *MockProgram) Exit(code int) {
 	p.exitCode = code
+}
+
+func (p *MockProgram) ExitCode() int {
+	return p.exitCode
+}
+
+func (p *MockProgram) Logger() *log.Logger {
+	return p.logger
 }
 
 type MockCli struct{}
@@ -55,32 +48,30 @@ func (c *MockCli) Cmd() cli.RootCmd {
 
 func TestRun(t *testing.T) {
 	testCases := []struct {
-		name       string
-		exitCode   int
-		args       []string
-		errMessage string
+		name     string
+		exitCode int
+		args     []string
 	}{
 		{
-			name:       "with no args",
-			args:       []string{},
-			exitCode:   1,
-			errMessage: "no args",
+			name:     "with no args",
+			args:     []string{},
+			exitCode: 1,
 		},
 		{
-			name:       "with help flag",
-			args:       []string{"--help"},
-			exitCode:   0,
-			errMessage: "",
+			name:     "with help flag",
+			args:     []string{"--help"},
+			exitCode: 0,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			l := log.New(os.Stderr)
-			p := &MockProg{
-				log: l,
+			logger := log.New(os.Stderr)
+			p := &MockProgram{
+				args:     tc.args,
+				logger:   logger,
+				exitCode: -1,
 			}
-			p.SetArgs(tc.args)
 			c := &MockCli{}
 
 			// Act
@@ -90,9 +81,9 @@ func TestRun(t *testing.T) {
 			})
 
 			// Assert
-			cupaloy.SnapshotT(t, out)
 			assert.NoError(t, err)
-			assert.Equal(t, p.exitCode, tc.exitCode)
+			cupaloy.SnapshotT(t, out)
+			assert.Equal(t, tc.exitCode, p.ExitCode())
 		})
 	}
 }
