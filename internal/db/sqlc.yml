@@ -1,9 +1,14 @@
 version: "2"
 sql:
-  - engine: "sqlite"
-    queries: "queries.sql"
+  - &base
+    engine: "sqlite"
+    queries: "clients.sql"
     schema: "migrations"
     gen:
       go:
         package: "queries"
         out: "queries"
+  - <<: *base
+    queries: "projects.sql"
+  - <<: *base
+    queries: "tasks.sql"
