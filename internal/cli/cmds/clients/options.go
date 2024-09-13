@@ -5,21 +5,21 @@ import (
 )
 
 type ClientsCmd struct {
-	Add    AddCmd    `cmd:"" help:"add a client"`
-	List   ListCmd   `cmd:"" default:"withargs" help:"list all clients"`
-	Delete DeleteCmd `cmd:"" help:"delete a client"`
+	Add    AddClientCmd     `cmd:"" help:"add a client"`
+	List   ListClientsCmd   `cmd:"" default:"withargs" help:"list all clients"`
+	Delete DeleteClientsCmd `cmd:"" help:"delete a client"`
 }
 
-type AddCmd struct {
+type AddClientCmd struct {
 	Name   string `short:"n" required:"" help:"the name of the client"`
 	client queries.Client
 }
 
-type ListCmd struct {
+type ListClientsCmd struct {
 	clients []queries.Client
 }
 
-type DeleteCmd struct {
+type DeleteClientsCmd struct {
 	Name   string `short:"n" xor:"id" required:"" help:"the name of the client"`
 	Id     int64  `short:"i" xor:"id" required:"" help:"the id of the client"`
 	client queries.Client

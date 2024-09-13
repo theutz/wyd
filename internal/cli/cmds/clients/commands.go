@@ -10,7 +10,7 @@ import (
 	"github.com/theutz/wyd/internal/db/queries"
 )
 
-func (cmd *AddCmd) Run(app *app.Context) error {
+func (cmd *AddClientCmd) Run(app *app.Context) error {
 	ctx := app.Ctx()
 	db := app.Db()
 	defer db.Close()
@@ -32,7 +32,7 @@ func (cmd *AddCmd) Run(app *app.Context) error {
 	return nil
 }
 
-func (cmd *AddCmd) Output() error {
+func (cmd *AddClientCmd) Output() error {
 	id := strconv.Itoa(int(cmd.client.ID))
 	client := map[string]string{
 		"ID":   id,
@@ -45,7 +45,7 @@ func (cmd *AddCmd) Output() error {
 	return nil
 }
 
-func (cmd *ListCmd) Run(app *app.Context) error {
+func (cmd *ListClientsCmd) Run(app *app.Context) error {
 	db := app.Db()
 	q := queries.New(db)
 
@@ -63,7 +63,7 @@ func (cmd *ListCmd) Run(app *app.Context) error {
 	return nil
 }
 
-func (cmd *ListCmd) Print() error {
+func (cmd *ListClientsCmd) Print() error {
 	if len(cmd.clients) < 1 {
 		return errors.New("no clients found")
 	}
@@ -83,7 +83,7 @@ func (cmd *ListCmd) Print() error {
 	return nil
 }
 
-func (cmd *DeleteCmd) Run(app *app.Context) error {
+func (cmd *DeleteClientsCmd) Run(app *app.Context) error {
 	ctx, q := app.Queries()
 
 	var client queries.Client
@@ -108,7 +108,7 @@ func (cmd *DeleteCmd) Run(app *app.Context) error {
 	return nil
 }
 
-func (cmd *DeleteCmd) Ouptut() {
+func (cmd *DeleteClientsCmd) Ouptut() {
 	id := strconv.Itoa(int(cmd.client.ID))
 	client := map[string]string{
 		"ID":   id,

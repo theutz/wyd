@@ -1,8 +1,16 @@
 package projects
 
-import "fmt"
+func (cmd *AddProjectsCmd) Run() error {
+	panic("unimplemented")
+	return nil
+}
 
-func (cmd *ListCmd) Run() error {
-	fmt.Println("list all projects")
+func (cmd *ListProjectsCmd) Run() error {
+	panic("unimplemented")
+	return nil
+}
+
+func (cmd *DeleteProjectsCmd) Run() error {
+	panic("unimplemented")
 	return nil
 }
