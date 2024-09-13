@@ -37,6 +37,13 @@
 pre-commit:
   parallel: true
   commands:
-    go-test:
+    govet:
+      tags: style
+      files: git ls-files -m
+      glob: "*.go"
+      run: go vet {files}
+    gotest:
       tags: test
-      run: mage test:all
+      files: git ls-files -m
+      glob: "*.go"
+      run: gotestsum {files}
