@@ -34,6 +34,22 @@
 #     "any.go":
 #       runner: go run
 
+pre-push:
+  parallel: false
+  commands:
+    generate:
+      tags: build
+      run: go generate ./...
+    tidy:
+      tags: build
+      run: go mod tidy
+    govet:
+      tags: style
+      run: go vet ./...
+    gotest:
+      tags: test
+      run: gotestsum ./... -- -count=1
+
 pre-commit:
   parallel: true
   commands:
