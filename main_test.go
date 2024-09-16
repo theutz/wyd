@@ -3,11 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
+	"github.com/charmbracelet/log"
 )
 
 func CaptureOutput(t *testing.T, f func()) string {
@@ -50,22 +52,27 @@ func CaptureOutput(t *testing.T, f func()) string {
 	return out
 }
 
-func TestInit(t *testing.T) {
+func TestNewApp(t *testing.T) {
 	testCases := []struct {
 		name     string
 		args     []string
 		exitCode int
 	}{
 		{"no args", []string{}, 1},
+		{"help flag", []string{"--help"}, 0},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Arrange
+			mockLogger := log.New(io.Discard)
+			mockApp := &App{
+				logger: mockLogger,
+			}
 
 			// Act
 			out := CaptureOutput(t, func() {
-				Init()
+				NewApp(mockApp)
 			})
 
 			// Assert
