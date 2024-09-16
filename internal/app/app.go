@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/config"
 )
 
 type Exiter interface {
@@ -17,12 +18,14 @@ type Application interface {
 	Logger() *log.Logger
 	Args() []string
 	Run() error
+	Config() config.Config
 }
 
 type App struct {
 	logger   *log.Logger
 	args     []string
 	exitCode int
+	config   config.Config
 }
 
 func (a *App) Logger() *log.Logger {
@@ -46,9 +49,14 @@ func (a *App) Run() error {
 	return nil
 }
 
+func (a *App) Config() config.Config {
+	return a.config
+}
+
 type NewAppParams struct {
 	Logger *log.Logger
 	Args   []string
+	Config config.Config
 }
 
 func NewApp(params NewAppParams) Application {
@@ -63,6 +71,7 @@ func NewApp(params NewAppParams) Application {
 	app := &App{
 		logger: params.Logger,
 		args:   params.Args,
+		config: params.Config,
 	}
 
 	return app
