@@ -53,6 +53,18 @@ func CaptureOutput(t *testing.T, f func()) string {
 	return out
 }
 
+type mockExiter struct {
+	exitCode int
+}
+
+func (e mockExiter) Exit(code int) {
+	e.exitCode = code
+}
+
+func (e mockExiter) ExitCode() int {
+	return e.exitCode
+}
+
 func TestNewApp(t *testing.T) {
 	testCases := []struct {
 		name     string
@@ -67,14 +79,14 @@ func TestNewApp(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Arrange
 			mockLogger := log.New(io.Discard)
-			mockApp := app.NewAppParams{
+			mockParams := app.NewAppParams{
 				Logger: mockLogger,
 				Args:   tc.args,
 			}
 
 			// Act
 			out := CaptureOutput(t, func() {
-				app.NewApp(mockApp)
+				app.NewApp(mockParams)
 			})
 
 			// Assert

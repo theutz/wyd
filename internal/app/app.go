@@ -2,20 +2,27 @@ package app
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/charmbracelet/log"
 )
 
+type Exiter interface {
+	Exit(code int)
+	ExitCode() int
+}
+
 type Application interface {
-	// Exit()
-	// ExitCode() int
+	Exiter
 	Logger() *log.Logger
 	Args() []string
+	Run() error
 }
 
 type App struct {
-	logger *log.Logger
-	args   []string
+	logger   *log.Logger
+	args     []string
+	exitCode int
 }
 
 func (a *App) Logger() *log.Logger {
@@ -24,6 +31,19 @@ func (a *App) Logger() *log.Logger {
 
 func (a *App) Args() []string {
 	return a.args
+}
+
+func (a *App) Exit(code int) {
+	a.exitCode = code
+	os.Exit(code)
+}
+
+func (a *App) ExitCode() int {
+	return a.exitCode
+}
+
+func (a *App) Run() error {
+	return nil
 }
 
 type NewAppParams struct {
@@ -40,10 +60,10 @@ func NewApp(params NewAppParams) Application {
 		params.Logger.Fatalf("no args provided")
 	}
 
-	a := &App{
+	app := &App{
 		logger: params.Logger,
 		args:   params.Args,
 	}
 
-	return a
+	return app
 }
