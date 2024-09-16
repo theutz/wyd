@@ -3,7 +3,7 @@ package queries
 import (
 	"strconv"
 
-	"github.com/theutz/wyd/internal/cli/out"
+	"github.com/theutz/wyd/internal/out"
 )
 
 type Renderable interface {

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/theutz/wyd/internal/cli/app"
+	"github.com/theutz/wyd/internal/app"
 	"github.com/theutz/wyd/internal/db/queries"
 )
 

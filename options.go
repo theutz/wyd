@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/theutz/wyd/internal/cli/cmds/clients"
-	"github.com/theutz/wyd/internal/cli/cmds/projects"
-	"github.com/theutz/wyd/internal/cli/cmds/tasks"
+	"github.com/theutz/wyd/internal/cmds/clients"
+	"github.com/theutz/wyd/internal/cmds/projects"
+	"github.com/theutz/wyd/internal/cmds/tasks"
 )
 
 type RootCmd struct {
