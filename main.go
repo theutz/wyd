@@ -1,25 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/app"
 )
-
-type App struct {
-	logger *log.Logger
-}
-
-func NewApp(app *App) {
-	fmt.Println("hello there")
-}
 
 func main() {
 	logger := log.New(os.Stderr)
-	app := &App{
-		logger: logger,
+
+	params := app.NewAppParams{
+		Logger: logger,
 	}
 
-	NewApp(app)
+	app.NewApp(params)
 }

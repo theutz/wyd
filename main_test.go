@@ -10,6 +10,7 @@ import (
 
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/app"
 )
 
 func CaptureOutput(t *testing.T, f func()) string {
@@ -66,13 +67,13 @@ func TestNewApp(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Arrange
 			mockLogger := log.New(io.Discard)
-			mockApp := &App{
-				logger: mockLogger,
+			mockApp := app.NewAppParams{
+				Logger: mockLogger,
 			}
 
 			// Act
 			out := CaptureOutput(t, func() {
-				NewApp(mockApp)
+				app.NewApp(mockApp)
 			})
 
 			// Assert
