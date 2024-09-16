@@ -9,9 +9,11 @@ import (
 
 func main() {
 	logger := log.New(os.Stderr)
+	args := os.Args[1:]
 
 	params := app.NewAppParams{
 		Logger: logger,
+		Args:   args,
 	}
 
 	app.NewApp(params)

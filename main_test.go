@@ -69,6 +69,7 @@ func TestNewApp(t *testing.T) {
 			mockLogger := log.New(io.Discard)
 			mockApp := app.NewAppParams{
 				Logger: mockLogger,
+				Args:   tc.args,
 			}
 
 			// Act

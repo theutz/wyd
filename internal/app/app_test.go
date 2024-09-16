@@ -12,6 +12,7 @@ func TestLogger(t *testing.T) {
 	// Arrange
 	a := NewApp(NewAppParams{
 		Logger: log.New(io.Discard),
+		Args:   []string{},
 	})
 
 	// Act
@@ -19,4 +20,17 @@ func TestLogger(t *testing.T) {
 
 	// Assert
 	assert.NotZero(t, l)
+}
+
+func TestArgs(t *testing.T) {
+	// Arrange
+	a := NewApp(NewAppParams{
+		Args: []string{"--help"},
+	})
+
+	// Act
+	r := a.Args()
+
+	// Assert
+	assert.Equal(t, []string{"--help"}, r)
 }
