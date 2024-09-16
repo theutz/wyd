@@ -31,7 +31,6 @@ func (c *Cli) Cmd() RootCmd {
 	return *c.rootCmd
 }
 
-// TODO: Extract this to the main package
 func (c *Cli) Run(args ...string) error {
 	ctx, err := app.New(c.Cmd().DatabasePath)
 	if err != nil {
