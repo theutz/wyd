@@ -1,0 +1,12 @@
+Usage: wyd client <command> [flags]
+
+work with client list
+
+Flags:
+  -h, --help    Show context-sensitive help.
+
+Commands:
+  client list
+    list all clients
+
+(*kong.ParseError)(expected "list")

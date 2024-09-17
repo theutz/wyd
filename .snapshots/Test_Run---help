@@ -9,6 +9,9 @@ Commands:
   config show
     print config to stdout
 
+  client list
+    list all clients
+
 Run "wyd <command> --help" for more information on a command.
 
-(*kong.ParseError)(expected "config")
+(*kong.ParseError)(expected one of "config", "client")

@@ -1,2 +1,2 @@
 
-(*kong.ParseError)(expected "config")
+(*kong.ParseError)(expected one of "config", "client")

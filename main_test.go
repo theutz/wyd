@@ -61,6 +61,9 @@ func Test_Run(t *testing.T) {
 		{[]string{"--help"}, 0},
 		{[]string{"config", "--help"}, 0},
 		{[]string{"config", "show"}, 0},
+		{[]string{"client"}, 0},
+		{[]string{"client", "--help"}, 0},
+		{[]string{"client", "list"}, 0},
 	}
 
 	for _, tc := range testCases {
