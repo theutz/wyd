@@ -4,5 +4,6 @@ whatcha doing? a time tracking helper
 
 Flags:
   -h, --help    Show context-sensitive help.
+wyd: error: no command selected
 
 (*errors.errorString)(no command selected)

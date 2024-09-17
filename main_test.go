@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/alecthomas/assert/v2"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/app"
@@ -59,7 +60,7 @@ func TestNewApp(t *testing.T) {
 		exitCode int
 	}{
 		{"no args", []string{}, 1},
-		{"help flag", []string{"--help"}, 0},
+		{"help flag", []string{"--help"}, 1},
 	}
 
 	for _, tc := range testCases {
@@ -81,6 +82,7 @@ func TestNewApp(t *testing.T) {
 
 			// Assert
 			cupaloy.SnapshotT(t, out, err)
+			assert.Equal(t, app.ExitCode(), tc.exitCode)
 		})
 	}
 }

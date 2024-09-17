@@ -65,6 +65,7 @@ func (a *App) Run() error {
 	}
 
 	err = context.Run(a)
+	context.FatalIfErrorf(err)
 
 	return err
 }
