@@ -1,10 +1,12 @@
 package config
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/util/path"
 	"gopkg.in/yaml.v3"
 )
@@ -16,20 +18,14 @@ var configPaths = []string{
 
 type config struct {
 	databasePath string `yaml:"database_path"`
-	configPaths  []string
 }
 
 func (c config) DatabasePath() string {
 	return c.databasePath
 }
 
-func (c config) ConfigPaths() []string {
-	return c.configPaths
-}
-
 type Config interface {
 	DatabasePath() string
-	ConfigPaths() []string
 }
 
 type ConfigNotFoundError struct {
@@ -76,7 +72,16 @@ func writeDefaultConfig(path string, data []byte) error {
 	return nil
 }
 
-func NewConfig(defaultConfig []byte) (Config, error) {
+//go:embed config.yml
+var defaultConfig []byte
+
+var logger = log.New(os.Stderr)
+
+func init() {
+	logger.SetPrefix("config")
+}
+
+func NewConfig() (Config, error) {
 	var configData []byte
 
 	p, err := findConfigFile()

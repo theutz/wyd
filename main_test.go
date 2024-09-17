@@ -9,7 +9,6 @@ import (
 
 	"github.com/alecthomas/assert/v2"
 	"github.com/bradleyjkemp/cupaloy"
-	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/app"
 )
 
@@ -67,9 +66,7 @@ func Test_Run(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
 			// Arrange
-			mockLogger := log.New(os.Stderr)
 			mockParams := app.NewAppParams{
-				Logger:         mockLogger,
 				Args:           tc.args,
 				IsFatalOnError: new(bool),
 			}
@@ -80,7 +77,7 @@ func Test_Run(t *testing.T) {
 			out := CaptureOutput(t, func() {
 				err = app.Run()
 				if err != nil {
-					app.Logger().Error(err)
+					logger.Error(err)
 					app.Exit(1)
 				}
 				app.Exit(0)

@@ -8,25 +8,25 @@ import (
 	"github.com/theutz/wyd/internal/config"
 )
 
+var logger = log.New(os.Stderr)
+
+func init() {
+	logger.SetPrefix("app")
+}
+
 type Application interface {
 	Exit(code int)
 	ExitCode() int
-	Logger() *log.Logger
 	Args() []string
 	Run() error
 	Config() config.Config
 }
 
 type App struct {
-	logger   *log.Logger
 	args     []string
 	exitCode int
 	config   config.Config
 	isFatal  bool
-}
-
-func (a *App) Logger() *log.Logger {
-	return a.logger.WithPrefix("app")
 }
 
 func (a *App) Args() []string {
@@ -53,13 +53,13 @@ func (a *App) Run() error {
 		kong.UsageOnError(),
 	)
 	if err != nil {
-		a.logger.Warn("creating parser", "parser", parser)
+		logger.Warn("creating parser", "parser", parser)
 		return err
 	}
 
 	context, err := parser.Parse(a.Args())
 	if err != nil {
-		a.logger.Warn("parsing args", "args", a.Args())
+		logger.Warn("parsing args", "args", a.Args())
 		return err
 	}
 
@@ -74,28 +74,30 @@ func (a *App) Config() config.Config {
 }
 
 type NewAppParams struct {
-	Logger         *log.Logger
 	Args           []string
 	Config         config.Config
 	IsFatalOnError *bool
 }
 
 func NewApp(params NewAppParams) Application {
-	if params.Logger == nil {
-		params.Logger = log.New(os.Stderr)
+	if params.IsFatalOnError == nil {
+		b := bool(true)
+		params.IsFatalOnError = &b
 	}
 
 	if params.Args == nil {
 		params.Args = os.Args[1:]
 	}
 
-	if params.IsFatalOnError == nil {
-		b := bool(true)
-		params.IsFatalOnError = &b
+	if params.Config == nil {
+		var err error
+		params.Config, err = config.NewConfig()
+		if err != nil {
+			logger.Error(err)
+		}
 	}
 
 	app := &App{
-		logger:   params.Logger,
 		args:     params.Args,
 		config:   params.Config,
 		isFatal:  *params.IsFatalOnError,
