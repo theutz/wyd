@@ -37,7 +37,7 @@ func NewDb(ctx context.Context, migrationsFS embed.FS, path string) (*sql.DB, er
 		return nil, err
 	}
 
-	if err := goose.UpContext(ctx, db, "migrations"); err != nil {
+	if err := goose.UpContext(ctx, db, "internal/migrations"); err != nil {
 		return nil, err
 	}
 

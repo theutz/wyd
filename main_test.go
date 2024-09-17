@@ -10,6 +10,7 @@ import (
 	"github.com/alecthomas/assert/v2"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/theutz/wyd/internal/app"
+	"github.com/theutz/wyd/internal/config"
 )
 
 func CaptureOutput(t *testing.T, f func()) string {
@@ -69,10 +70,14 @@ func Test_Run(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
 			// Arrange
+			config := &config.Config{
+				DatabasePath: ":memory:",
+			}
 			mockParams := app.NewAppParams{
 				Args:           tc.args,
 				IsFatalOnError: new(bool),
 				MigrationsFS:   &embeddedMigrations,
+				Config:         config,
 			}
 			app := app.NewApp(mockParams)
 			var err error
