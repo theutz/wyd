@@ -1,5 +1,7 @@
 package app
 
+import "fmt"
+
 var cli struct {
 	Config ConfigCmd `cmd:"" help:"view wyd configuration"`
 }
@@ -11,7 +13,6 @@ type ConfigCmd struct {
 type ShowCmd struct{}
 
 func (cmd *ShowCmd) Run(app Application) error {
-	l := app.Logger().WithPrefix("config show")
-	l.Print(app.Config())
+	fmt.Println(app.Config())
 	return nil
 }

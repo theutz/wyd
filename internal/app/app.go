@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/alecthomas/kong"
@@ -78,33 +77,29 @@ type NewAppParams struct {
 	Logger         *log.Logger
 	Args           []string
 	Config         config.Config
-	IsFatalOnError bool
+	IsFatalOnError *bool
 }
 
 func NewApp(params NewAppParams) Application {
 	if params.Logger == nil {
-		fmt.Printf("wyd: no logger provided")
+		params.Logger = log.New(os.Stderr)
 	}
 
 	if params.Args == nil {
-		params.Logger.Fatalf("no args provided")
+		params.Args = os.Args[1:]
 	}
 
-	var fatalOnError bool
-	switch params.IsFatalOnError {
-	case true:
-		fatalOnError = true
-	case false:
-		fatalOnError = false
-	default:
-		fatalOnError = true
+	if params.IsFatalOnError == nil {
+		b := bool(true)
+		params.IsFatalOnError = &b
 	}
 
 	app := &App{
-		logger:  params.Logger,
-		args:    params.Args,
-		config:  params.Config,
-		isFatal: fatalOnError,
+		logger:   params.Logger,
+		args:     params.Args,
+		config:   params.Config,
+		isFatal:  *params.IsFatalOnError,
+		exitCode: 8,
 	}
 
 	return app

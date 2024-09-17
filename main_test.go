@@ -53,33 +53,37 @@ func CaptureOutput(t *testing.T, f func()) string {
 	return out
 }
 
-func TestNewApp(t *testing.T) {
+func Test_Run(t *testing.T) {
 	testCases := []struct {
-		name     string
 		args     []string
 		exitCode int
 	}{
-		{"no args", []string{}, 0},
-		{"help flag", []string{"--help"}, 0},
-		{"config help", []string{"config", "--help"}, 0},
-		{"show config", []string{"config show"}, 0},
+		{[]string{}, 0},
+		{[]string{"--help"}, 0},
+		{[]string{"config", "--help"}, 0},
+		{[]string{"config show"}, 0},
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
 			// Arrange
 			mockLogger := log.New(os.Stderr)
 			mockParams := app.NewAppParams{
 				Logger:         mockLogger,
 				Args:           tc.args,
-				IsFatalOnError: false,
+				IsFatalOnError: new(bool),
 			}
 			app := app.NewApp(mockParams)
-
 			var err error
+
 			// Act
 			out := CaptureOutput(t, func() {
 				err = app.Run()
+				if err != nil {
+					app.Logger().Error(err)
+					app.Exit(1)
+				}
+				app.Exit(0)
 			})
 
 			// Assert

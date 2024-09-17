@@ -60,4 +60,6 @@ func main() {
 		app.Logger().Error(err)
 		app.Exit(1)
 	}
+
+	app.Exit(0)
 }
