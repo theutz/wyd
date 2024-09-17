@@ -75,6 +75,12 @@ func (a *App) Run() error {
 		kong.Description("whatcha doing? a time tracking helper"),
 		kong.Exit(a.Exit),
 		kong.UsageOnError(),
+		kong.ConfigureHelp(kong.HelpOptions{
+			Compact:             true,
+			FlagsLast:           true,
+			NoExpandSubcommands: true,
+			Tree:                true,
+		}),
 		kong.Bind(
 			config,
 			a,
