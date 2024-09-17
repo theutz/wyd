@@ -1,12 +1,15 @@
 package app
 
 import (
+	"context"
 	"embed"
 	"os"
 
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/config"
+	"github.com/theutz/wyd/internal/db"
+	"github.com/theutz/wyd/internal/queries/clients"
 )
 
 var logger = log.New(os.Stderr)
@@ -20,6 +23,7 @@ type Application interface {
 	ExitCode() int
 	Args() []string
 	Run() error
+	Context() context.Context
 }
 
 type App struct {
@@ -28,6 +32,7 @@ type App struct {
 	config      config.Config
 	migrationFS embed.FS
 	isFatal     bool
+	context     context.Context
 }
 
 func (a *App) Args() []string {
@@ -45,6 +50,10 @@ func (a *App) ExitCode() int {
 	return a.exitCode
 }
 
+func (a *App) Context() context.Context {
+	return a.context
+}
+
 func (a *App) Run() error {
 	config, err := config.NewConfig()
 	if err != nil {
@@ -52,28 +61,43 @@ func (a *App) Run() error {
 		return err
 	}
 
+	db, err := db.NewDb(
+		a.Context(),
+		a.migrationFS,
+		config.DatabasePath,
+	)
+	if err != nil {
+		logger.Warn("creating db")
+		return err
+	}
+
+	clients := clients.New(db)
+
 	parser, err := kong.New(
 		&cli,
 		kong.Name("wyd"),
 		kong.Description("whatcha doing? a time tracking helper"),
 		kong.Exit(a.Exit),
 		kong.UsageOnError(),
-		kong.Bind(config),
-		kong.BindTo(a, (*Application)(nil)),
+		kong.Bind(
+			config,
+			a,
+			clients,
+		),
 	)
 	if err != nil {
 		logger.Warn("creating parser", "parser", parser)
 		return err
 	}
 
-	context, err := parser.Parse(a.Args())
+	kctx, err := parser.Parse(a.Args())
 	if err != nil {
 		logger.Warn("parsing args", "args", a.Args())
 		return err
 	}
 
-	err = context.Run()
-	context.FatalIfErrorf(err)
+	err = kctx.Run()
+	kctx.FatalIfErrorf(err)
 
 	return err
 }
@@ -87,6 +111,7 @@ type NewAppParams struct {
 	Config         *config.Config
 	IsFatalOnError *bool
 	MigrationsFS   *embed.FS
+	Context        *context.Context
 }
 
 func NewApp(params NewAppParams) Application {
@@ -97,6 +122,11 @@ func NewApp(params NewAppParams) Application {
 
 	if params.Args == nil {
 		params.Args = os.Args[1:]
+	}
+
+	if params.Context == nil {
+		c := context.Background()
+		params.Context = &c
 	}
 
 	if params.Config == nil {
@@ -116,6 +146,7 @@ func NewApp(params NewAppParams) Application {
 		config:      *params.Config,
 		isFatal:     *params.IsFatalOnError,
 		migrationFS: *params.MigrationsFS,
+		context:     *params.Context,
 		exitCode:    8,
 	}
 

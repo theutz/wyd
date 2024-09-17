@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE IF NOT EXISTS clients (
+CREATE TABLE IF NOT EXISTS clients (
   id INT PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE
 );
@@ -8,5 +8,5 @@ CREATE IF NOT EXISTS clients (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP IF EXISTS clients;
+DROP TABLE IF EXISTS clients;
 -- +goose StatementEnd

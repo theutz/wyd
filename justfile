@@ -2,8 +2,24 @@
 default:
   just --list
 
+# run go module tidy
+tidy:
+  go mod tidy
+
+# run the go code generator
+generate *args: tidy
+  go generate {{args}} ./... 
+
+alias g := generate
+
+# watch files and run generator on changes
+generate-watch *args:
+  watchexec -e '*.go' -- just generate {{args}}
+
+alias gw := generate-watch
+
 # run all tests
-test *args:
+test *args: generate
   gotestsum ./... -- {{args}}
 
 alias t := test
@@ -16,7 +32,7 @@ alias tu := test-update-snapshots
 
 # watch tests
 test-watch *args:
-  watchexec -- just test {{args}}
+  watchexec -v -- just test {{args}}
 
 alias tw := test-watch
 
@@ -27,7 +43,7 @@ test-watch-update-snapshots *args:
 alias tuw := test-watch-update-snapshots
 
 # run the program
-run *args:
+run *args: generate
   go run . {{ args }}
 
 alias r := run
