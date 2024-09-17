@@ -3,24 +3,24 @@ default:
   just --list
 
 # run all tests
-test:
-  gotestsum ./...
+test *args:
+  gotestsum ./... -- {{args}}
 
 alias t := test
 
 # update all snapshots
-test-update-snapshots:
-  UPDATE_SNAPSHOTS=1 just test
+test-update-snapshots *args:
+  UPDATE_SNAPSHOTS=1 just test {{args}}
 
 alias tu := test-update-snapshots
 
-test-watch:
-  watchexec -- just test
+test-watch *args:
+  watchexec -- just test {{args}}
 
 alias tw := test-watch
 
-test-watch-update-snapshots:
-  watchexec -- just test-update-snapshots
+test-watch-update-snapshots *args:
+  watchexec -- just test-update-snapshots {{args}}
 
 alias tuw := test-watch-update-snapshots
 

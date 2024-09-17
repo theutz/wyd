@@ -1,1 +1,8 @@
+Usage: wyd [flags]
 
+whatcha doing? a time tracking helper
+
+Flags:
+  -h, --help    Show context-sensitive help.
+
+(*errors.errorString)(no command selected)

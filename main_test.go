@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"testing"
@@ -53,18 +52,6 @@ func CaptureOutput(t *testing.T, f func()) string {
 	return out
 }
 
-type mockExiter struct {
-	exitCode int
-}
-
-func (e mockExiter) Exit(code int) {
-	e.exitCode = code
-}
-
-func (e mockExiter) ExitCode() int {
-	return e.exitCode
-}
-
 func TestNewApp(t *testing.T) {
 	testCases := []struct {
 		name     string
@@ -78,19 +65,22 @@ func TestNewApp(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Arrange
-			mockLogger := log.New(io.Discard)
+			mockLogger := log.New(os.Stderr)
 			mockParams := app.NewAppParams{
-				Logger: mockLogger,
-				Args:   tc.args,
+				Logger:         mockLogger,
+				Args:           tc.args,
+				IsFatalOnError: false,
 			}
+			app := app.NewApp(mockParams)
 
+			var err error
 			// Act
 			out := CaptureOutput(t, func() {
-				app.NewApp(mockParams)
+				err = app.Run()
 			})
 
 			// Assert
-			cupaloy.SnapshotT(t, out)
+			cupaloy.SnapshotT(t, out, err)
 		})
 	}
 }

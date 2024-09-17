@@ -4,17 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/config"
 )
 
-type Exiter interface {
+type Application interface {
 	Exit(code int)
 	ExitCode() int
-}
-
-type Application interface {
-	Exiter
 	Logger() *log.Logger
 	Args() []string
 	Run() error
@@ -26,10 +23,11 @@ type App struct {
 	args     []string
 	exitCode int
 	config   config.Config
+	isFatal  bool
 }
 
 func (a *App) Logger() *log.Logger {
-	return a.logger
+	return a.logger.WithPrefix("app")
 }
 
 func (a *App) Args() []string {
@@ -38,7 +36,9 @@ func (a *App) Args() []string {
 
 func (a *App) Exit(code int) {
 	a.exitCode = code
-	os.Exit(code)
+	if a.isFatal {
+		os.Exit(code)
+	}
 }
 
 func (a *App) ExitCode() int {
@@ -46,7 +46,27 @@ func (a *App) ExitCode() int {
 }
 
 func (a *App) Run() error {
-	return nil
+	parser, err := kong.New(
+		&cli,
+		kong.Name("wyd"),
+		kong.Description("whatcha doing? a time tracking helper"),
+		kong.Exit(a.Exit),
+		kong.UsageOnError(),
+	)
+	if err != nil {
+		a.logger.Warn("creating parser", "parser", parser)
+		return err
+	}
+
+	context, err := parser.Parse(a.Args())
+	if err != nil {
+		a.logger.Warn("parsing args", "args", a.Args())
+		return err
+	}
+
+	err = context.Run(a)
+
+	return err
 }
 
 func (a *App) Config() config.Config {
@@ -54,9 +74,10 @@ func (a *App) Config() config.Config {
 }
 
 type NewAppParams struct {
-	Logger *log.Logger
-	Args   []string
-	Config config.Config
+	Logger         *log.Logger
+	Args           []string
+	Config         config.Config
+	IsFatalOnError bool
 }
 
 func NewApp(params NewAppParams) Application {
@@ -68,10 +89,21 @@ func NewApp(params NewAppParams) Application {
 		params.Logger.Fatalf("no args provided")
 	}
 
+	var fatalOnError bool
+	switch params.IsFatalOnError {
+	case true:
+		fatalOnError = true
+	case false:
+		fatalOnError = false
+	default:
+		fatalOnError = true
+	}
+
 	app := &App{
-		logger: params.Logger,
-		args:   params.Args,
-		config: params.Config,
+		logger:  params.Logger,
+		args:    params.Args,
+		config:  params.Config,
+		isFatal: fatalOnError,
 	}
 
 	return app

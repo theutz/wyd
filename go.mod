@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/alecthomas/kong v1.2.1 // indirect
 	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/lipgloss v0.10.0 // indirect
