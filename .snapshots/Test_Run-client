@@ -1,2 +1,2 @@
 
-(*kong.ParseError)(expected "list")
+(*kong.ParseError)(expected one of "list", "add")

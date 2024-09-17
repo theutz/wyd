@@ -2,11 +2,12 @@ Usage: wyd client <command> [flags]
 
 work with client list
 
+Commands:
+  list (show,ls)    list all clients
+
+  add (create,a)    add a new client
+
 Flags:
   -h, --help    Show context-sensitive help.
 
-Commands:
-  client list
-    list all clients
-
-(*kong.ParseError)(expected "list")
+(*kong.ParseError)(expected one of "list", "add")

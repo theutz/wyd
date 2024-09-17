@@ -51,7 +51,8 @@ func makeDsn(path string) (string, error) {
 		prefix, _ = strings.CutSuffix(path, ":")
 		path = ""
 	} else {
-		if err := ensureFile(path); err != nil {
+		var err error
+		if path, err = ensureFile(path); err != nil {
 			return "", err
 		}
 		prefix = "file"
@@ -70,25 +71,25 @@ func makeDsn(path string) (string, error) {
 	return dsn, nil
 }
 
-func ensureFile(path string) error {
+func ensureFile(path string) (string, error) {
 	path, err := util.ExpandTilde(path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return err
+		return "", err
 	}
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		file, err := os.Create(path)
 		if err != nil {
-			return err
+			return "", err
 		}
 		defer file.Close()
 	} else if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return path, nil
 }

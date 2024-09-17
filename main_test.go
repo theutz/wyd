@@ -65,6 +65,8 @@ func Test_Run(t *testing.T) {
 		{[]string{"client"}, 0},
 		{[]string{"client", "--help"}, 0},
 		{[]string{"client", "list"}, 0},
+		{[]string{"client", "add", "--help"}, 0},
+		{[]string{"client", "add", "-n", "Delegator"}, 0},
 	}
 
 	for _, tc := range testCases {

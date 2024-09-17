@@ -1,0 +1,11 @@
+Usage: wyd client add (create,a) [flags]
+
+add a new client
+
+Flags:
+  -h, --help           Show context-sensitive help.
+
+  -n, --name=STRING    name of the client
+{1 }
+
+(interface {}) <nil>

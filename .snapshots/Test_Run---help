@@ -2,15 +2,16 @@ Usage: wyd <command> [flags]
 
 whatcha doing? a time tracking helper
 
+Commands:
+  config              view wyd configuration
+    show              print config to stdout
+
+  client              work with client list
+    list (show,ls)    list all clients
+    add (create,a)    add a new client
+
 Flags:
   -h, --help    Show context-sensitive help.
-
-Commands:
-  config show
-    print config to stdout
-
-  client list
-    list all clients
 
 Run "wyd <command> --help" for more information on a command.
 
