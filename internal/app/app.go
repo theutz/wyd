@@ -1,6 +1,7 @@
 package app
 
 import (
+	"embed"
 	"os"
 
 	"github.com/alecthomas/kong"
@@ -19,14 +20,14 @@ type Application interface {
 	ExitCode() int
 	Args() []string
 	Run() error
-	Config() config.Config
 }
 
 type App struct {
-	args     []string
-	exitCode int
-	config   config.Config
-	isFatal  bool
+	args        []string
+	exitCode    int
+	config      config.Config
+	migrationFS embed.FS
+	isFatal     bool
 }
 
 func (a *App) Args() []string {
@@ -45,12 +46,20 @@ func (a *App) ExitCode() int {
 }
 
 func (a *App) Run() error {
+	config, err := config.NewConfig()
+	if err != nil {
+		logger.Warnf("loading config")
+		return err
+	}
+
 	parser, err := kong.New(
 		&cli,
 		kong.Name("wyd"),
 		kong.Description("whatcha doing? a time tracking helper"),
 		kong.Exit(a.Exit),
 		kong.UsageOnError(),
+		kong.Bind(config),
+		kong.BindTo(a, (*Application)(nil)),
 	)
 	if err != nil {
 		logger.Warn("creating parser", "parser", parser)
@@ -63,7 +72,7 @@ func (a *App) Run() error {
 		return err
 	}
 
-	err = context.Run(a)
+	err = context.Run()
 	context.FatalIfErrorf(err)
 
 	return err
@@ -75,8 +84,9 @@ func (a *App) Config() config.Config {
 
 type NewAppParams struct {
 	Args           []string
-	Config         config.Config
+	Config         *config.Config
 	IsFatalOnError *bool
+	MigrationsFS   *embed.FS
 }
 
 func NewApp(params NewAppParams) Application {
@@ -97,11 +107,16 @@ func NewApp(params NewAppParams) Application {
 		}
 	}
 
+	if params.MigrationsFS == nil {
+		logger.Fatal("embedded migrations not loaded")
+	}
+
 	app := &App{
-		args:     params.Args,
-		config:   params.Config,
-		isFatal:  *params.IsFatalOnError,
-		exitCode: 8,
+		args:        params.Args,
+		config:      *params.Config,
+		isFatal:     *params.IsFatalOnError,
+		migrationFS: *params.MigrationsFS,
+		exitCode:    8,
 	}
 
 	return app

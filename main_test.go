@@ -60,7 +60,7 @@ func Test_Run(t *testing.T) {
 		{[]string{}, 0},
 		{[]string{"--help"}, 0},
 		{[]string{"config", "--help"}, 0},
-		{[]string{"config show"}, 0},
+		{[]string{"config", "show"}, 0},
 	}
 
 	for _, tc := range testCases {
@@ -69,6 +69,7 @@ func Test_Run(t *testing.T) {
 			mockParams := app.NewAppParams{
 				Args:           tc.args,
 				IsFatalOnError: new(bool),
+				MigrationsFS:   &embeddedMigrations,
 			}
 			app := app.NewApp(mockParams)
 			var err error

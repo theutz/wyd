@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
 
@@ -10,12 +11,17 @@ import (
 
 var logger = log.New(os.Stderr)
 
+//go:embed internal/migrations/*.sql
+var embeddedMigrations embed.FS
+
 func init() {
 	logger.SetPrefix("main")
 }
 
 func main() {
-	params := app.NewAppParams{}
+	params := app.NewAppParams{
+		MigrationsFS: &embeddedMigrations,
+	}
 	app := app.NewApp(params)
 
 	err := app.Run()

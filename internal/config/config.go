@@ -7,81 +7,29 @@ import (
 	"path/filepath"
 
 	"github.com/charmbracelet/log"
-	"github.com/theutz/wyd/internal/util/path"
+	"github.com/theutz/wyd/internal/util"
 	"gopkg.in/yaml.v3"
 )
+
+var logger = log.New(os.Stderr)
 
 var configPaths = []string{
 	"~/.config/wyd/wyd.yml",
 	"~/.config/wyd/wyd.yaml",
 }
 
-type config struct {
-	databasePath string `yaml:"database_path"`
-}
-
-func (c config) DatabasePath() string {
-	return c.databasePath
-}
-
-type Config interface {
-	DatabasePath() string
-}
-
-type ConfigNotFoundError struct {
-	configPaths []string
-}
-
-func (e *ConfigNotFoundError) Error() string {
-	return fmt.Sprintf("config file not found at %v", e.configPaths)
-}
-
-func findConfigFile() (string, error) {
-	for _, p := range configPaths {
-		p, err := path.ExpandTilde(p)
-		if err != nil {
-			return "", fmt.Errorf("expanding tilde for %s: %w", p, err)
-		}
-		_, err = os.Stat(p)
-		if os.IsNotExist(err) {
-			break
-		} else if err != nil {
-			return "", fmt.Errorf("fetching info for %s: %w", p, err)
-		} else {
-			return p, nil
-		}
-	}
-
-	return "", &ConfigNotFoundError{
-		configPaths: configPaths,
-	}
-}
-
-func writeDefaultConfig(path string, data []byte) error {
-	dir := filepath.Dir(path)
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err != nil {
-		return fmt.Errorf("attempting to create %s: %w", dir, err)
-	}
-
-	err = os.WriteFile(path, data, 0644)
-	if err != nil {
-		return fmt.Errorf("attempting to write default config to %s: %w", path, err)
-	}
-
-	return nil
-}
-
 //go:embed config.yml
 var defaultConfig []byte
-
-var logger = log.New(os.Stderr)
 
 func init() {
 	logger.SetPrefix("config")
 }
 
-func NewConfig() (Config, error) {
+type Config struct {
+	DatabasePath string `yaml:"database_path"`
+}
+
+func NewConfig() (*Config, error) {
 	var configData []byte
 
 	p, err := findConfigFile()
@@ -102,11 +50,70 @@ func NewConfig() (Config, error) {
 		}
 	}
 
-	var config config
-	err = yaml.Unmarshal(configData, config)
+	c := new(Config)
+	err = yaml.Unmarshal(configData, c)
 	if err != nil {
 		return nil, fmt.Errorf("while parsing yaml config: %w", err)
 	}
 
-	return config, nil
+	return c, nil
+}
+
+func (c *Config) ToYaml() (string, error) {
+	out, err := yaml.Marshal(c)
+
+	return string(out), err
+}
+
+type ConfigNotFoundError struct {
+	configPaths []string
+}
+
+func (e *ConfigNotFoundError) Error() string {
+	return fmt.Sprintf("config file not found at %v", e.configPaths)
+}
+
+func findConfigFile() (string, error) {
+	for _, p := range configPaths {
+		p, err := util.ExpandTilde(p)
+		if err != nil {
+			return "", fmt.Errorf("expanding tilde for %s: %w", p, err)
+		}
+		_, err = os.Stat(p)
+		if os.IsNotExist(err) {
+			break
+		} else if err != nil {
+			return "", fmt.Errorf("fetching info for %s: %w", p, err)
+		} else {
+			return p, nil
+		}
+	}
+
+	return "", &ConfigNotFoundError{
+		configPaths: configPaths,
+	}
+}
+
+func writeDefaultConfig(path string, data []byte) error {
+	var err error
+	path, err = util.ExpandTilde(path)
+	if err != nil {
+		logger.Warn("expanding tilde", "path", path)
+		return err
+	}
+
+	dir := filepath.Dir(path)
+	err = os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		logger.Warnf("creating %s", dir)
+		return err
+	}
+
+	err = os.WriteFile(path, data, 0644)
+	if err != nil {
+		logger.Warnf("writing default config to %s", path)
+		return err
+	}
+
+	return nil
 }

@@ -14,11 +14,13 @@ test-update-snapshots *args:
 
 alias tu := test-update-snapshots
 
+# watch tests
 test-watch *args:
   watchexec -- just test {{args}}
 
 alias tw := test-watch
 
+# watch tests while automatically updating snapshots
 test-watch-update-snapshots *args:
   watchexec -- just test-update-snapshots {{args}}
 
@@ -35,3 +37,9 @@ run-watch *args:
   watchexec -- just run {{ args }}
 
 alias rw := run-watch
+
+# create an empty migration
+migrate-create *name:
+  goose -dir internal/migrations create {{ snakecase(name) }} sql
+
+alias mig := migrate-create
