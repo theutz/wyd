@@ -14,7 +14,7 @@ alias g := generate
 
 # watch files and run generator on changes
 generate-watch *args:
-  watchexec -e '*.go' -- just generate {{args}}
+  watchexec -e go -- just generate {{args}}
 
 alias gw := generate-watch
 
@@ -32,7 +32,7 @@ alias tu := test-update-snapshots
 
 # watch tests
 test-watch *args:
-  watchexec -v -- just test {{args}}
+  watchexec -e go -v -- just test {{args}}
 
 alias tw := test-watch
 

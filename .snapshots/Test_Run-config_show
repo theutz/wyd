@@ -1,4 +1,4 @@
-database_path: ':memory:'
+database_path: db.sqlite
 
 
 (interface {}) <nil>
