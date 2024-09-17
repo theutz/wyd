@@ -1,9 +1,14 @@
-Usage: wyd [flags]
+Usage: wyd <command> [flags]
 
 whatcha doing? a time tracking helper
 
 Flags:
   -h, --help    Show context-sensitive help.
-wyd: error: no command selected
 
-(*errors.errorString)(no command selected)
+Commands:
+  config show
+    print config to stdout
+
+Run "wyd <command> --help" for more information on a command.
+
+(*kong.ParseError)(expected "config")

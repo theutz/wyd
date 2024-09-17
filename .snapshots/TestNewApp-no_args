@@ -1,3 +1,2 @@
-wyd: error: no command selected
 
-(*errors.errorString)(no command selected)
+(*kong.ParseError)(expected "config")

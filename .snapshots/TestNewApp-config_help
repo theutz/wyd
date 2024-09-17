@@ -1,0 +1,12 @@
+Usage: wyd config <command> [flags]
+
+view wyd configuration
+
+Flags:
+  -h, --help    Show context-sensitive help.
+
+Commands:
+  config show
+    print config to stdout
+
+(*kong.ParseError)(expected "show")

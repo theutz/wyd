@@ -59,8 +59,10 @@ func TestNewApp(t *testing.T) {
 		args     []string
 		exitCode int
 	}{
-		{"no args", []string{}, 1},
-		{"help flag", []string{"--help"}, 1},
+		{"no args", []string{}, 0},
+		{"help flag", []string{"--help"}, 0},
+		{"config help", []string{"config", "--help"}, 0},
+		{"show config", []string{"config show"}, 0},
 	}
 
 	for _, tc := range testCases {
@@ -82,7 +84,7 @@ func TestNewApp(t *testing.T) {
 
 			// Assert
 			cupaloy.SnapshotT(t, out, err)
-			assert.Equal(t, app.ExitCode(), tc.exitCode)
+			assert.Equal(t, tc.exitCode, app.ExitCode())
 		})
 	}
 }
