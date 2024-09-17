@@ -1,0 +1,5 @@
+asdf-plugin-manager https://github.com/asdf-community/asdf-plugin-manager.git 54ac342
+goose               https://github.com/samhvw8/asdf-goose                     473fa40
+gotestsum           https://github.com/hpcsc/asdf-gotestsum.git               e74c3a0
+just                https://github.com/olofvndrhr/asdf-just.git               3f907ee
+sqlc                https://github.com/dylanrayboss/asdf-sqlc                 aff381e
