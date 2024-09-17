@@ -59,6 +59,15 @@ func NewConfig() (*Config, error) {
 	return c, nil
 }
 
+func DefaultConfig() (*Config, error) {
+	c := new(Config)
+	err := yaml.Unmarshal(defaultConfig, c)
+	if err != nil {
+		return nil, fmt.Errorf("while parsing yaml default config: %w", err)
+	}
+	return c, nil
+}
+
 func (c *Config) ToYaml() (string, error) {
 	out, err := yaml.Marshal(c)
 

@@ -1,4 +1,4 @@
-database_path: ~/.local/share/wyd/wyd.db
+database_path: ':memory:'
 
 
 (interface {}) <nil>

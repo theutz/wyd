@@ -2,8 +2,6 @@ package app
 
 import (
 	"fmt"
-
-	"github.com/theutz/wyd/internal/config"
 )
 
 type ConfigCmd struct {
@@ -12,7 +10,8 @@ type ConfigCmd struct {
 
 type ShowCmd struct{}
 
-func (cmd *ShowCmd) Run(config *config.Config) error {
+func (cmd *ShowCmd) Run(app *App) error {
+	config := app.Config()
 	yaml, err := config.ToYaml()
 	if err != nil {
 		logger.Warn("getting config as yaml")

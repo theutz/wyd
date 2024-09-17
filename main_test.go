@@ -70,9 +70,9 @@ func Test_Run(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
 			// Arrange
-			config := &config.Config{
-				DatabasePath: ":memory:",
-			}
+			config, err := config.DefaultConfig()
+			assert.NoError(t, err)
+			config.DatabasePath = ":memory:"
 			mockParams := app.NewAppParams{
 				Args:           tc.args,
 				IsFatalOnError: new(bool),
@@ -80,7 +80,6 @@ func Test_Run(t *testing.T) {
 				Config:         config,
 			}
 			app := app.NewApp(mockParams)
-			var err error
 
 			// Act
 			out := CaptureOutput(t, func() {

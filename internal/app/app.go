@@ -55,16 +55,12 @@ func (a *App) Context() context.Context {
 }
 
 func (a *App) Run() error {
-	config, err := config.NewConfig()
-	if err != nil {
-		logger.Warnf("loading config")
-		return err
-	}
+	config := a.Config()
 
 	db, err := db.NewDb(
 		a.Context(),
 		a.migrationFS,
-		config.DatabasePath,
+		a.Config().DatabasePath,
 	)
 	if err != nil {
 		logger.Warn("creating db")

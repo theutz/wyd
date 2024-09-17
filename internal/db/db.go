@@ -12,6 +12,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
+	"github.com/theutz/wyd/internal/util"
 )
 
 var sqliteOpts = [][]string{
@@ -70,6 +71,10 @@ func makeDsn(path string) (string, error) {
 }
 
 func ensureFile(path string) error {
+	path, err := util.ExpandTilde(path)
+	if err != nil {
+		return err
+	}
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
