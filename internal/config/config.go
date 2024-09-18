@@ -120,7 +120,7 @@ func writeDefaultConfig(path string, data []byte) error {
 		return fmt.Errorf("creating %s: %w", dir, err)
 	}
 
-	err = os.WriteFile(path, data, 0644)
+	err = os.WriteFile(path, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("writing to %s: %w", path, err)
 	}

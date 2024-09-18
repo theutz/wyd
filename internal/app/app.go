@@ -18,13 +18,11 @@ type Application interface {
 	ExitCode() int
 	Args() []string
 	Run() error
-	Context() context.Context
 }
 
 type App struct {
 	config      config.Config
 	migrationFS embed.FS
-	context     context.Context
 	args        []string
 	isFatal     bool
 	exitCode    int
@@ -45,15 +43,12 @@ func (a *App) ExitCode() int {
 	return a.exitCode
 }
 
-func (a *App) Context() context.Context {
-	return a.context
-}
-
 func (a *App) Run() error {
+	ctx := context.Background()
 	config := a.Config()
 
 	connection, err := db.NewConnection(
-		a.Context(),
+		ctx,
 		a.migrationFS,
 		a.Config().DatabasePath,
 	)
@@ -87,6 +82,7 @@ func (a *App) Run() error {
 			a,
 			clients,
 		),
+		kong.BindTo(ctx, (*context.Context)(nil)),
 	)
 	if err != nil {
 		return fmt.Errorf("creating parser: %w", err)
@@ -154,7 +150,6 @@ func NewApp(params NewAppParams) Application {
 		config:      *params.Config,
 		isFatal:     *params.IsFatalOnError,
 		migrationFS: *params.MigrationsFS,
-		context:     *params.Context,
 		exitCode:    8,
 	}
 

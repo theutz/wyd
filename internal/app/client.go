@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/theutz/wyd/internal/queries/clients"
@@ -13,8 +14,8 @@ type ClientCmd struct {
 
 type ClientListCmd struct{}
 
-func (cmd *ClientListCmd) Run(app *App, c *clients.Queries) error {
-	clients, err := c.All(app.Context())
+func (cmd *ClientListCmd) Run(ctx context.Context, c *clients.Queries) error {
+	clients, err := c.All(ctx)
 	if err != nil {
 		err = fmt.Errorf("loading all clients: %w", err)
 
@@ -30,8 +31,8 @@ type ClientAddCmd struct {
 	Name string `help:"name of the client" short:"n"`
 }
 
-func (cmd *ClientAddCmd) Run(app *App, c *clients.Queries) error {
-	client, err := c.Create(app.Context(), cmd.Name)
+func (cmd *ClientAddCmd) Run(ctx context.Context, c *clients.Queries) error {
+	client, err := c.Create(ctx, cmd.Name)
 	if err != nil {
 		err = fmt.Errorf("creating client: %w", err)
 

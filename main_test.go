@@ -49,7 +49,7 @@ func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int
 	return out, app.ExitCode(), err
 }
 
-func Test_Incomplete(t *testing.T) {
+func Test_Incomplete(t *testing.T) { //nolint:paralleltest
 	testCases := []struct {
 		args []string
 	}{
