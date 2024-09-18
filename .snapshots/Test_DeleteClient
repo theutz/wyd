@@ -1,6 +1,9 @@
 [{1 Delegator} {2 Something}]
 
-{1 Delegator}
+╭──────────┬────────────────────╮
+│ID        │1                   │
+│Name      │Delegator           │
+╰──────────┴────────────────────╯
 
 [{2 Something}]
 
