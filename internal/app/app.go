@@ -98,9 +98,13 @@ func (a *App) Run() error {
 	}
 
 	err = kctx.Run()
+	if err != nil {
+		return fmt.Errorf("while running kong: %w", err)
+	}
+
 	kctx.FatalIfErrorf(err)
 
-	return fmt.Errorf("while running kong: %w", err)
+	return nil
 }
 
 func (a *App) Config() config.Config {

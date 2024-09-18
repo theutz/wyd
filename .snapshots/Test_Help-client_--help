@@ -10,4 +10,5 @@ Commands:
 Flags:
   -h, --help    Show context-sensitive help.
 
-(*kong.ParseError)(expected one of "list", "add")
+(*fmt.wrapError)(parsing args: expected one of "list", "add")
+(int) 0

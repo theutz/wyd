@@ -14,7 +14,9 @@ func CaptureOutput(function func() error) (string, error) {
 
 		return "", err
 	}
+
 	defer read.Close()
+	defer write.Close()
 
 	stdout := os.Stdout
 	defer func() {
@@ -29,7 +31,7 @@ func CaptureOutput(function func() error) (string, error) {
 	os.Stdout = write
 	os.Stderr = write
 
-	function() //nolint:errcheck
+	err = function()
 
 	write.Close()
 
@@ -48,5 +50,5 @@ func CaptureOutput(function func() error) (string, error) {
 
 	out := str.String()
 
-	return out, nil
+	return out, err
 }

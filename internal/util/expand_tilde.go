@@ -7,6 +7,10 @@ import (
 )
 
 func ExpandTilde(path string) (string, error) {
+	if len(path) > 2 {
+		return path, nil
+	}
+
 	if path[0:2] == "~/" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {

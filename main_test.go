@@ -25,9 +25,10 @@ func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int
 	config.DatabasePath = testDbPath
 	ctx := context.Background()
 
+	isFatalOnError := false
 	mockParams := app.NewAppParams{
 		Args:           args,
-		IsFatalOnError: new(bool),
+		IsFatalOnError: &isFatalOnError,
 		MigrationsFS:   &migrationFS,
 		Config:         config,
 		Context:        &ctx,
@@ -37,49 +38,44 @@ func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int
 	out, err := util.CaptureOutput(func() error {
 		err := app.Run()
 		if err != nil {
-			return err //nolint:wrapcheck
+			app.Exit(1)
 		}
 
-		return nil
+		app.Exit(0)
+
+		return err //nolint:wrapcheck
 	})
 
 	return out, app.ExitCode(), err
 }
 
-func Test_Help(t *testing.T) {
-	t.Parallel()
-
+func Test_Help(t *testing.T) { //nolint:paralleltest
 	testCases := []struct {
-		args     []string
-		exitCode int
+		args []string
 	}{
-		{[]string{}, 0},
-		{[]string{"--help"}, 0},
-		{[]string{"config", "--help"}, 0},
-		{[]string{"config", "show"}, 0},
-		{[]string{"client"}, 0},
-		{[]string{"client", "--help"}, 0},
-		{[]string{"client", "list"}, 0},
-		{[]string{"client", "list", "--help"}, 0},
-		{[]string{"client", "add", "--help"}, 0},
+		{[]string{}},
+		{[]string{"--help"}},
+		{[]string{"config", "--help"}},
+		{[]string{"config", "show"}},
+		{[]string{"client"}},
+		{[]string{"client", "--help"}},
+		{[]string{"client", "list"}},
+		{[]string{"client", "list", "--help"}},
+		{[]string{"client", "add", "--help"}},
 	}
 
-	for _, testCase := range testCases {
+	for _, testCase := range testCases { //nolint:paralleltest
 		os.Remove(testDbPath)
 		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
-			t.Parallel()
 			out, exitCode, err := RunMockApp(t, embeddedMigrations, testCase.args...)
 
 			// Assert
-			cupaloy.SnapshotT(t, out, err)
-			assert.Equal(t, testCase.exitCode, exitCode)
+			cupaloy.SnapshotT(t, out, err, exitCode)
 		})
 	}
 }
 
-func Test_AddClient(t *testing.T) {
-	t.Parallel()
-
+func Test_AddClient(t *testing.T) { //nolint:paralleltest
 	os.Remove(testDbPath)
 
 	run := func(args ...string) (string, int, error) {

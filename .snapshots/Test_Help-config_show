@@ -1,4 +1,5 @@
-database_path: db.sqlite
+databasePath: db.sqlite
 
 
 (interface {}) <nil>
+(int) 0

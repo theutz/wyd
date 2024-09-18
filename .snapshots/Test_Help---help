@@ -15,4 +15,5 @@ Flags:
 
 Run "wyd <command> --help" for more information on a command.
 
-(*kong.ParseError)(expected one of "config", "client")
+(*fmt.wrapError)(parsing args: expected one of "config", "client")
+(int) 0

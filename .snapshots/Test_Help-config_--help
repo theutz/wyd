@@ -8,4 +8,5 @@ Commands:
 Flags:
   -h, --help    Show context-sensitive help.
 
-(*kong.ParseError)(expected "show")
+(*fmt.wrapError)(parsing args: expected "show")
+(int) 0
