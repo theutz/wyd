@@ -61,28 +61,32 @@ func Test_Help(t *testing.T) { //nolint:paralleltest
 }
 
 func Test_AddClient(t *testing.T) { //nolint:paralleltest
+	// Arrange
+	defer cleanup(t)
+
 	run := func(args ...string) (string, int, error) {
 		return runMockApp(t, embeddedMigrations, args...)
 	}
-
-	defer cleanup(t)
 
 	// Act
 	out, exitCode, err := run("client", "add", "-n", "Delegator")
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Equal(t, "{1 Delegator}\n", out)
 	assert.Equal(t, 0, exitCode)
+
+	listOut, _, err := run("client", "list")
+	assert.NoError(t, err)
+	cupaloy.SnapshotT(t, out, listOut)
 }
 
 func Test_ListClient(t *testing.T) { //nolint:paralleltest
 	// Arrange
+	defer cleanup(t)
+
 	run := func(args ...string) (string, int, error) {
 		return runMockApp(t, embeddedMigrations, args...)
 	}
-
-	defer cleanup(t)
 
 	names := []string{"Delegator", "Something"}
 	for _, name := range names {
@@ -93,8 +97,8 @@ func Test_ListClient(t *testing.T) { //nolint:paralleltest
 	// Act
 	out, exitCode, err := run("client", "list")
 	assert.NoError(t, err)
-	assert.Equal(t, "[{1 Delegator} {2 Something}]\n", out)
 	assert.Equal(t, 0, exitCode)
+	cupaloy.SnapshotT(t, out)
 }
 
 func Test_DeleteClient(t *testing.T) { //nolint:paralleltest
@@ -111,17 +115,20 @@ func Test_DeleteClient(t *testing.T) { //nolint:paralleltest
 		assert.NoError(t, err)
 	}
 
+	initialOut, _, err := run("client", "list")
+	assert.NoError(t, err)
+
 	// Act
 	out, exitCode, err := run("client", "remove", "-n", "Delegator")
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Equal(t, "{1 Delegator}\n", out)
 	assert.Equal(t, 0, exitCode)
 
-	out, _, err = run("client", "list")
+	listOut, _, err := run("client", "list")
 	assert.NoError(t, err)
-	assert.Equal(t, "[{2 Something}]\n", out)
+
+	cupaloy.SnapshotT(t, initialOut, out, listOut)
 }
 
 func runMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int, error) {
