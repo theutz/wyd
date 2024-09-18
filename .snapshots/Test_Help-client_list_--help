@@ -1,0 +1,9 @@
+Usage: wyd client list (show,ls)
+
+list all clients
+
+Flags:
+  -h, --help    Show context-sensitive help.
+[]
+
+(interface {}) <nil>

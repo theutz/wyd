@@ -7,8 +7,10 @@ require (
 	github.com/alecthomas/kong v1.2.1
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/charmbracelet/log v0.4.0
+	github.com/lithammer/dedent v1.1.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/pressly/goose/v3 v3.22.1
+	github.com/sqlc-dev/sqlc v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -29,7 +31,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8 // indirect
+	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 )

@@ -41,7 +41,7 @@ func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, err
 	return out, err, app.ExitCode()
 }
 
-func Test_Run(t *testing.T) {
+func Test_Help(t *testing.T) {
 	testCases := []struct {
 		args     []string
 		exitCode int
@@ -53,8 +53,8 @@ func Test_Run(t *testing.T) {
 		{[]string{"client"}, 0},
 		{[]string{"client", "--help"}, 0},
 		{[]string{"client", "list"}, 0},
+		{[]string{"client", "list", "--help"}, 0},
 		{[]string{"client", "add", "--help"}, 0},
-		{[]string{"client", "add", "-n", "Delegator"}, 0},
 	}
 
 	for _, tc := range testCases {
@@ -67,4 +67,21 @@ func Test_Run(t *testing.T) {
 			assert.Equal(t, tc.exitCode, exitCode)
 		})
 	}
+}
+
+func Test_ClientAdd(t *testing.T) {
+	os.Remove(testDbPath)
+	run := func(args ...string) (string, error, int) {
+		return RunMockApp(t, embeddedMigrations, args...)
+	}
+
+	out, err, exitCode := run("client", "add", "-n", "Delegator")
+	assert.NoError(t, err)
+	assert.Equal(t, "{1 Delegator}\n", out)
+	assert.Equal(t, 0, exitCode)
+
+	out, err, exitCode = run("client", "list")
+	assert.NoError(t, err)
+	assert.Equal(t, "[{1 Delegator}]\n", out)
+	assert.Equal(t, 0, exitCode)
 }
