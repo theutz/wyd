@@ -1,6 +1,6 @@
 package app
 
-var cli struct {
+type Cli struct {
 	Config ConfigCmd `cmd:"" help:"view wyd configuration"`
 	Client ClientCmd `cmd:"" help:"work with client list"`
 }

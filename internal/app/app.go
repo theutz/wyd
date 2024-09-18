@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"embed"
+	"fmt"
 	"os"
 
 	"github.com/alecthomas/kong"
@@ -11,12 +12,6 @@ import (
 	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/queries/clients"
 )
-
-var logger = log.New(os.Stderr)
-
-func init() {
-	logger.SetPrefix("app")
-}
 
 type Application interface {
 	Exit(code int)
@@ -27,12 +22,12 @@ type Application interface {
 }
 
 type App struct {
-	args        []string
-	exitCode    int
 	config      config.Config
 	migrationFS embed.FS
-	isFatal     bool
 	context     context.Context
+	args        []string
+	isFatal     bool
+	exitCode    int
 }
 
 func (a *App) Args() []string {
@@ -57,17 +52,19 @@ func (a *App) Context() context.Context {
 func (a *App) Run() error {
 	config := a.Config()
 
-	db, err := db.NewDb(
+	connection, err := db.NewConnection(
 		a.Context(),
 		a.migrationFS,
 		a.Config().DatabasePath,
 	)
 	if err != nil {
-		logger.Warn("creating db")
-		return err
+		return fmt.Errorf("creating db: %w", err)
 	}
+	defer connection.Close()
 
-	clients := clients.New(db)
+	clients := clients.New(connection)
+
+	var cli Cli
 
 	parser, err := kong.New(
 		&cli,
@@ -80,6 +77,10 @@ func (a *App) Run() error {
 			FlagsLast:           true,
 			NoExpandSubcommands: true,
 			Tree:                true,
+			NoAppSummary:        false,
+			Summary:             true,
+			Indenter:            nil,
+			WrapUpperBound:      -1,
 		}),
 		kong.Bind(
 			config,
@@ -88,20 +89,18 @@ func (a *App) Run() error {
 		),
 	)
 	if err != nil {
-		logger.Warn("creating parser", "parser", parser)
-		return err
+		return fmt.Errorf("creating parser: %w", err)
 	}
 
 	kctx, err := parser.Parse(a.Args())
 	if err != nil {
-		logger.Warn("parsing args", "args", a.Args())
-		return err
+		return fmt.Errorf("parsing args: %w", err)
 	}
 
 	err = kctx.Run()
 	kctx.FatalIfErrorf(err)
 
-	return err
+	return fmt.Errorf("while running kong: %w", err)
 }
 
 func (a *App) Config() config.Config {
@@ -109,14 +108,16 @@ func (a *App) Config() config.Config {
 }
 
 type NewAppParams struct {
-	Args           []string
 	Config         *config.Config
 	IsFatalOnError *bool
 	MigrationsFS   *embed.FS
 	Context        *context.Context
+	Args           []string
 }
 
 func NewApp(params NewAppParams) Application {
+	logger := log.WithPrefix("app")
+
 	if params.IsFatalOnError == nil {
 		b := bool(true)
 		params.IsFatalOnError = &b
@@ -133,6 +134,7 @@ func NewApp(params NewAppParams) Application {
 
 	if params.Config == nil {
 		var err error
+
 		params.Config, err = config.NewConfig()
 		if err != nil {
 			logger.Error(err)

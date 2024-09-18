@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"os"
 	"strings"
@@ -13,35 +14,41 @@ import (
 	"github.com/theutz/wyd/internal/util"
 )
 
-var testDbPath = "db.sqlite"
+const testDbPath = "db.sqlite"
 
-func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, error, int) {
+func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int, error) {
+	t.Helper()
+
 	config, err := config.DefaultConfig()
 	assert.NoError(t, err)
 
 	config.DatabasePath = testDbPath
+	ctx := context.Background()
 
 	mockParams := app.NewAppParams{
 		Args:           args,
 		IsFatalOnError: new(bool),
 		MigrationsFS:   &migrationFS,
 		Config:         config,
+		Context:        &ctx,
 	}
 
 	app := app.NewApp(mockParams)
-	out := util.CaptureOutput(t, func() {
-		err = app.Run()
+	out, err := util.CaptureOutput(func() error {
+		err := app.Run()
 		if err != nil {
-			logger.Error(err)
-			app.Exit(1)
+			return err //nolint:wrapcheck
 		}
-		app.Exit(0)
+
+		return nil
 	})
 
-	return out, err, app.ExitCode()
+	return out, app.ExitCode(), err
 }
 
 func Test_Help(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		args     []string
 		exitCode int
@@ -57,30 +64,34 @@ func Test_Help(t *testing.T) {
 		{[]string{"client", "add", "--help"}, 0},
 	}
 
-	for _, tc := range testCases {
+	for _, testCase := range testCases {
 		os.Remove(testDbPath)
-		t.Run(strings.Join(tc.args, " "), func(t *testing.T) {
-			out, err, exitCode := RunMockApp(t, embeddedMigrations, tc.args...)
+		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
+			t.Parallel()
+			out, exitCode, err := RunMockApp(t, embeddedMigrations, testCase.args...)
 
 			// Assert
 			cupaloy.SnapshotT(t, out, err)
-			assert.Equal(t, tc.exitCode, exitCode)
+			assert.Equal(t, testCase.exitCode, exitCode)
 		})
 	}
 }
 
-func Test_ClientAdd(t *testing.T) {
+func Test_AddClient(t *testing.T) {
+	t.Parallel()
+
 	os.Remove(testDbPath)
-	run := func(args ...string) (string, error, int) {
+
+	run := func(args ...string) (string, int, error) {
 		return RunMockApp(t, embeddedMigrations, args...)
 	}
 
-	out, err, exitCode := run("client", "add", "-n", "Delegator")
+	out, exitCode, err := run("client", "add", "-n", "Delegator")
 	assert.NoError(t, err)
 	assert.Equal(t, "{1 Delegator}\n", out)
 	assert.Equal(t, 0, exitCode)
 
-	out, err, exitCode = run("client", "list")
+	out, exitCode, err = run("client", "list")
 	assert.NoError(t, err)
 	assert.Equal(t, "[{1 Delegator}]\n", out)
 	assert.Equal(t, 0, exitCode)

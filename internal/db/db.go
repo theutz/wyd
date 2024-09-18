@@ -5,44 +5,38 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // needed for database connections
 	"github.com/pressly/goose/v3"
 	"github.com/theutz/wyd/internal/util"
 )
 
-var sqliteOpts = [][]string{
-	{"foreign_keys", "on"},
-	{"journal_mode", "WAL"},
-}
-
-func NewDb(ctx context.Context, migrationsFS embed.FS, path string) (*sql.DB, error) {
+func NewConnection(ctx context.Context, migrationsFS embed.FS, path string) (*sql.DB, error) {
 	dsn, err := makeDsn(path)
 	if err != nil {
 		return nil, err
 	}
 
-	db, err := sql.Open("sqlite3", dsn)
+	connection, err := sql.Open("sqlite3", dsn)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("opening db connection: %w", err)
 	}
 
 	goose.SetBaseFS(migrationsFS)
 	goose.SetLogger(goose.NopLogger())
 
 	if err := goose.SetDialect("sqlite3"); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("setting db dialect: %w", err)
 	}
 
-	if err := goose.UpContext(ctx, db, "internal/migrations"); err != nil {
-		return nil, err
+	if err := goose.UpContext(ctx, connection, "internal/migrations"); err != nil {
+		return nil, fmt.Errorf("setting migration context: %w", err)
 	}
 
-	return db, nil
+	return connection, nil
 }
 
 func makeDsn(path string) (string, error) {
@@ -55,18 +49,11 @@ func makeDsn(path string) (string, error) {
 		if path, err = ensureFile(path); err != nil {
 			return "", err
 		}
+
 		prefix = "file"
 	}
 
-	options := ""
-	for _, o := range sqliteOpts {
-		k := url.QueryEscape(o[0])
-		v := url.QueryEscape(o[1])
-		options = fmt.Sprintf("%s&%s=%s", options, k, v)
-	}
-	options, _ = strings.CutPrefix(options, "&")
-
-	dsn := fmt.Sprintf("%s:%s?%s", prefix, path, options)
+	dsn := fmt.Sprintf("%s:%s?foreign_keys=on&journal_mode=WAL", prefix, path)
 
 	return dsn, nil
 }
@@ -74,21 +61,22 @@ func makeDsn(path string) (string, error) {
 func ensureFile(path string) (string, error) {
 	path, err := util.ExpandTilde(path)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("expanding tilde: %w", err)
 	}
+
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return "", err
+		return "", fmt.Errorf("making directories: %w", err)
 	}
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		file, err := os.Create(path)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("creating sqlite db file: %w", err)
 		}
 		defer file.Close()
 	} else if err != nil {
-		return "", err
+		return "", fmt.Errorf("checking existence of db file: %w", err)
 	}
 
 	return path, nil

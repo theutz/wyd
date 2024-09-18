@@ -2,6 +2,12 @@
 default:
   just --list
 
+# lint all files
+lint:
+  golangci-lint run ./...
+
+alias l := lint
+
 # run go module tidy
 tidy:
   go mod tidy

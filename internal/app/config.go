@@ -12,11 +12,13 @@ type ShowCmd struct{}
 
 func (cmd *ShowCmd) Run(app *App) error {
 	config := app.Config()
+
 	yaml, err := config.ToYaml()
 	if err != nil {
-		logger.Warn("getting config as yaml")
-		return err
+		return fmt.Errorf("getting config as yaml: %w", err)
 	}
+
 	fmt.Println(yaml)
+
 	return nil
 }

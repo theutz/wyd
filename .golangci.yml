@@ -15,6 +15,7 @@ linters:
     - gci
     - gocheckcompilerdirectives
     - gochecknoglobals
+    - gochecknoinits
     - goconst
     - godot
     - godox

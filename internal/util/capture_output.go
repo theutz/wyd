@@ -5,45 +5,48 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"testing"
 )
 
-func CaptureOutput(t *testing.T, f func()) string {
-	t.Helper()
-
-	r, w, err := os.Pipe()
+func CaptureOutput(function func() error) (string, error) {
+	read, write, err := os.Pipe()
 	if err != nil {
 		err = fmt.Errorf("error: setting up pipe: %w", err)
-		t.Fatal(err)
+
+		return "", err
 	}
-	defer r.Close()
+	defer read.Close()
 
 	stdout := os.Stdout
-	stderr := os.Stderr
 	defer func() {
 		os.Stdout = stdout
+	}()
+
+	stderr := os.Stderr
+	defer func() {
 		os.Stderr = stderr
 	}()
-	os.Stdout = w
-	os.Stderr = w
 
-	f()
-	w.Close()
+	os.Stdout = write
+	os.Stderr = write
 
-	s := strings.Builder{}
-	scanner := bufio.NewScanner(r)
+	function() //nolint:errcheck
+
+	write.Close()
+
+	str := strings.Builder{}
+
+	scanner := bufio.NewScanner(read)
 	for scanner.Scan() {
-		s.WriteString(fmt.Sprintf("%s\n", scanner.Text()))
+		str.WriteString(fmt.Sprintf("%s\n", scanner.Text()))
 	}
+
 	if scanner.Err() != nil {
 		err = fmt.Errorf("error: while scanning output: %w", err)
-		t.Fatal(err)
-	}
-	out := s.String()
 
-	if err != nil {
-		t.Fatal(err)
+		return "", err
 	}
 
-	return out
+	out := str.String()
+
+	return out, nil
 }

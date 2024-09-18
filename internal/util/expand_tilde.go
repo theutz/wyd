@@ -16,6 +16,7 @@ func ExpandTilde(path string) (string, error) {
 		path = path[2:]
 		path = filepath.Clean(path)
 		path = filepath.Join(homeDir, path)
+
 		return path, nil
 	}
 

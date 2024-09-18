@@ -9,18 +9,19 @@ import (
 	"github.com/theutz/wyd/internal/app"
 )
 
-var logger = log.New(os.Stderr)
-
 //go:embed internal/migrations/*.sql
 var embeddedMigrations embed.FS
 
-func init() {
-	logger.SetPrefix("main")
-}
-
 func main() {
+	logger := log.New(os.Stderr)
+	logger.SetPrefix("main")
+
 	params := app.NewAppParams{
-		MigrationsFS: &embeddedMigrations,
+		MigrationsFS:   &embeddedMigrations,
+		IsFatalOnError: nil,
+		Args:           nil,
+		Config:         nil,
+		Context:        nil,
 	}
 	app := app.NewApp(params)
 
