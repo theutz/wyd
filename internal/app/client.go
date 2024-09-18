@@ -8,8 +8,9 @@ import (
 )
 
 type ClientCmd struct {
-	List ClientListCmd `aliases:"show,ls"  cmd:"" help:"list all clients"`
-	Add  ClientAddCmd  `aliases:"create,a" cmd:"" help:"add a new client"`
+	List   ClientListCmd   `aliases:"show,ls"  cmd:"" help:"list all clients"`
+	Add    ClientAddCmd    `aliases:"create,a" cmd:"" help:"add a new client"`
+	Remove ClientRemoveCmd `aliases:"delete"   cmd:"" help:"remove a client"`
 }
 
 type ClientListCmd struct{}
@@ -17,9 +18,7 @@ type ClientListCmd struct{}
 func (cmd *ClientListCmd) Run(ctx context.Context, c *clients.Queries) error {
 	clients, err := c.All(ctx)
 	if err != nil {
-		err = fmt.Errorf("loading all clients: %w", err)
-
-		return err
+		return fmt.Errorf("loading all clients: %w", err)
 	}
 
 	fmt.Println(clients)
@@ -34,9 +33,22 @@ type ClientAddCmd struct {
 func (cmd *ClientAddCmd) Run(ctx context.Context, c *clients.Queries) error {
 	client, err := c.Create(ctx, cmd.Name)
 	if err != nil {
-		err = fmt.Errorf("creating client: %w", err)
+		return fmt.Errorf("creating client: %w", err)
+	}
 
-		return err
+	fmt.Println(client)
+
+	return nil
+}
+
+type ClientRemoveCmd struct {
+	Name string `help:"the name of the client" short:"n"`
+}
+
+func (cmd *ClientRemoveCmd) Run(ctx context.Context, c *clients.Queries) error {
+	client, err := c.DeleteByName(ctx, cmd.Name)
+	if err != nil {
+		return fmt.Errorf("deleting client by name %s: %w", cmd.Name, err)
 	}
 
 	fmt.Println(client)

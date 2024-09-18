@@ -3,12 +3,14 @@ Usage: wyd client <command> [flags]
 work with client list
 
 Commands:
-  list (show,ls)    list all clients
+  list (show,ls)     list all clients
 
-  add (create,a)    add a new client
+  add (create,a)     add a new client
+
+  remove (delete)    remove a client
 
 Flags:
   -h, --help    Show context-sensitive help.
 
-(*fmt.wrapError)(parsing args: expected one of "list", "add")
+(*fmt.wrapError)(parsing args: expected one of "list", "add", "remove")
 (int) 0

@@ -6,3 +6,8 @@ FROM clients;
 INSERT INTO clients (name)
 VALUES (?)
 RETURNING *;
+
+-- name: DeleteByName :one
+DELETE FROM clients
+WHERE name LIKE ?
+RETURNING *;

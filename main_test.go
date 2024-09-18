@@ -29,12 +29,10 @@ func Test_Incomplete(t *testing.T) { //nolint:paralleltest
 	for _, testCase := range testCases { //nolint:paralleltest
 		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
 			out, exitCode, err := runMockApp(t, embeddedMigrations, testCase.args...)
+			defer cleanup(t)
 
 			// Assert
 			cupaloy.SnapshotT(t, out, err, exitCode)
-
-			// Cleanup
-			cleanup(t)
 		})
 	}
 }
@@ -54,12 +52,10 @@ func Test_Help(t *testing.T) { //nolint:paralleltest
 	for _, testCase := range testCases { //nolint:paralleltest
 		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
 			out, exitCode, err := runMockApp(t, embeddedMigrations, testCase.args...)
+			defer cleanup(t)
 
 			// Assert
 			cupaloy.SnapshotT(t, out, err, exitCode)
-
-			// Cleanup
-			cleanup(t)
 		})
 	}
 }
@@ -69,6 +65,8 @@ func Test_AddClient(t *testing.T) { //nolint:paralleltest
 		return runMockApp(t, embeddedMigrations, args...)
 	}
 
+	defer cleanup(t)
+
 	// Act
 	out, exitCode, err := run("client", "add", "-n", "Delegator")
 
@@ -76,9 +74,6 @@ func Test_AddClient(t *testing.T) { //nolint:paralleltest
 	assert.NoError(t, err)
 	assert.Equal(t, "{1 Delegator}\n", out)
 	assert.Equal(t, 0, exitCode)
-
-	// Cleanup
-	cleanup(t)
 }
 
 func Test_ListClient(t *testing.T) { //nolint:paralleltest
@@ -86,6 +81,8 @@ func Test_ListClient(t *testing.T) { //nolint:paralleltest
 	run := func(args ...string) (string, int, error) {
 		return runMockApp(t, embeddedMigrations, args...)
 	}
+
+	defer cleanup(t)
 
 	names := []string{"Delegator", "Something"}
 	for _, name := range names {
@@ -98,9 +95,33 @@ func Test_ListClient(t *testing.T) { //nolint:paralleltest
 	assert.NoError(t, err)
 	assert.Equal(t, "[{1 Delegator} {2 Something}]\n", out)
 	assert.Equal(t, 0, exitCode)
+}
 
-	// Cleanup
-	cleanup(t)
+func Test_DeleteClient(t *testing.T) { //nolint:paralleltest
+	// Arrange
+	defer cleanup(t)
+
+	run := func(args ...string) (string, int, error) {
+		return runMockApp(t, embeddedMigrations, args...)
+	}
+
+	names := []string{"Delegator", "Something"}
+	for _, name := range names {
+		_, _, err := run("client", "add", "-n", name)
+		assert.NoError(t, err)
+	}
+
+	// Act
+	out, exitCode, err := run("client", "remove", "-n", "Delegator")
+
+	// Assert
+	assert.NoError(t, err)
+	assert.Equal(t, "{1 Delegator}\n", out)
+	assert.Equal(t, 0, exitCode)
+
+	out, _, err = run("client", "list")
+	assert.NoError(t, err)
+	assert.Equal(t, "[{2 Something}]\n", out)
 }
 
 func runMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int, error) {
