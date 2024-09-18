@@ -16,7 +16,94 @@ import (
 
 const testDbPath = "db.sqlite"
 
-func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int, error) {
+func Test_Incomplete(t *testing.T) { //nolint:paralleltest
+	testCases := []struct {
+		args []string
+	}{
+		{[]string{}},
+		{[]string{"config", "show"}},
+		{[]string{"client"}},
+		{[]string{"client", "list"}},
+	}
+
+	for _, testCase := range testCases { //nolint:paralleltest
+		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
+			out, exitCode, err := runMockApp(t, embeddedMigrations, testCase.args...)
+
+			// Assert
+			cupaloy.SnapshotT(t, out, err, exitCode)
+
+			// Cleanup
+			cleanup(t)
+		})
+	}
+}
+
+func Test_Help(t *testing.T) { //nolint:paralleltest
+	testCases := []struct {
+		args []string
+	}{
+		{[]string{}},
+		{[]string{"--help"}},
+		{[]string{"config", "--help"}},
+		{[]string{"client", "--help"}},
+		{[]string{"client", "list", "--help"}},
+		{[]string{"client", "add", "--help"}},
+	}
+
+	for _, testCase := range testCases { //nolint:paralleltest
+		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
+			out, exitCode, err := runMockApp(t, embeddedMigrations, testCase.args...)
+
+			// Assert
+			cupaloy.SnapshotT(t, out, err, exitCode)
+
+			// Cleanup
+			cleanup(t)
+		})
+	}
+}
+
+func Test_AddClient(t *testing.T) { //nolint:paralleltest
+	run := func(args ...string) (string, int, error) {
+		return runMockApp(t, embeddedMigrations, args...)
+	}
+
+	// Act
+	out, exitCode, err := run("client", "add", "-n", "Delegator")
+
+	// Assert
+	assert.NoError(t, err)
+	assert.Equal(t, "{1 Delegator}\n", out)
+	assert.Equal(t, 0, exitCode)
+
+	// Cleanup
+	cleanup(t)
+}
+
+func Test_ListClient(t *testing.T) { //nolint:paralleltest
+	// Arrange
+	run := func(args ...string) (string, int, error) {
+		return runMockApp(t, embeddedMigrations, args...)
+	}
+
+	names := []string{"Delegator", "Something"}
+	for _, name := range names {
+		_, _, err := run("client", "add", "-n", name)
+		assert.NoError(t, err)
+	}
+
+	// Act
+	out, exitCode, err := run("client", "list")
+	assert.NoError(t, err)
+	assert.Equal(t, "[{1 Delegator} {2 Something}]\n", out)
+	assert.Equal(t, 0, exitCode)
+
+	// Cleanup
+	cleanup(t)
+}
+
+func runMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int, error) {
 	t.Helper()
 
 	config, err := config.DefaultConfig()
@@ -49,64 +136,11 @@ func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int
 	return out, app.ExitCode(), err
 }
 
-func Test_Incomplete(t *testing.T) { //nolint:paralleltest
-	testCases := []struct {
-		args []string
-	}{
-		{[]string{}},
-		{[]string{"config", "show"}},
-		{[]string{"client"}},
-		{[]string{"client", "list"}},
+func cleanup(t *testing.T) {
+	t.Helper()
+
+	err := os.Remove(testDbPath)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	for _, testCase := range testCases { //nolint:paralleltest
-		os.Remove(testDbPath)
-		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
-			out, exitCode, err := RunMockApp(t, embeddedMigrations, testCase.args...)
-
-			// Assert
-			cupaloy.SnapshotT(t, out, err, exitCode)
-		})
-	}
-}
-
-func Test_Help(t *testing.T) { //nolint:paralleltest
-	testCases := []struct {
-		args []string
-	}{
-		{[]string{}},
-		{[]string{"--help"}},
-		{[]string{"config", "--help"}},
-		{[]string{"client", "--help"}},
-		{[]string{"client", "list", "--help"}},
-		{[]string{"client", "add", "--help"}},
-	}
-
-	for _, testCase := range testCases { //nolint:paralleltest
-		os.Remove(testDbPath)
-		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
-			out, exitCode, err := RunMockApp(t, embeddedMigrations, testCase.args...)
-
-			// Assert
-			cupaloy.SnapshotT(t, out, err, exitCode)
-		})
-	}
-}
-
-func Test_AddClient(t *testing.T) { //nolint:paralleltest
-	os.Remove(testDbPath)
-
-	run := func(args ...string) (string, int, error) {
-		return RunMockApp(t, embeddedMigrations, args...)
-	}
-
-	out, exitCode, err := run("client", "add", "-n", "Delegator")
-	assert.NoError(t, err)
-	assert.Equal(t, "{1 Delegator}\n", out)
-	assert.Equal(t, 0, exitCode)
-
-	out, exitCode, err = run("client", "list")
-	assert.NoError(t, err)
-	assert.Equal(t, "[{1 Delegator}]\n", out)
-	assert.Equal(t, 0, exitCode)
 }
