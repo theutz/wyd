@@ -9,8 +9,9 @@ import (
 )
 
 type ProjectCmd struct {
-	List ProjectListCmd `aliases:"show,ls"  cmd:"" help:"list all projects"`
-	Add  ProjectAddCmd  `aliases:"create,a" cmd:"" help:"add a new project"`
+	List   ProjectListCmd   `aliases:"show,ls"   cmd:"" help:"list all projects"`
+	Add    ProjectAddCmd    `aliases:"create,a"  cmd:"" help:"add a new project"`
+	Remove ProjectRemoveCmd `aliases:"delete,rm" cmd:"" help:"remove a project"`
 }
 
 type ProjectListCmd struct{}
@@ -49,6 +50,21 @@ func (cmd *ProjectAddCmd) Run(
 	project, err := projectq.Create(ctx, params)
 	if err != nil {
 		return fmt.Errorf("creating project: %w", err)
+	}
+
+	fmt.Println(project)
+
+	return nil
+}
+
+type ProjectRemoveCmd struct {
+	Name string `help:"the name of the project" required:"" short:"n"`
+}
+
+func (cmd *ProjectRemoveCmd) Run(ctx context.Context, q *projects.Queries) error {
+	project, err := q.DeleteByName(ctx, cmd.Name)
+	if err != nil {
+		return fmt.Errorf("deleting project by name %s: %w", cmd.Name, err)
 	}
 
 	fmt.Println(project)

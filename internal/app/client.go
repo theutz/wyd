@@ -8,9 +8,9 @@ import (
 )
 
 type ClientCmd struct {
-	List   ClientListCmd   `aliases:"show,ls"  cmd:"" help:"list all clients"`
-	Add    ClientAddCmd    `aliases:"create,a" cmd:"" help:"add a new client"`
-	Remove ClientRemoveCmd `aliases:"delete"   cmd:"" help:"remove a client"`
+	List   ClientListCmd   `aliases:"show,ls"   cmd:"" help:"list all clients"`
+	Add    ClientAddCmd    `aliases:"create,a"  cmd:"" help:"add a new client"`
+	Remove ClientRemoveCmd `aliases:"delete,rm" cmd:"" help:"remove a client"`
 }
 
 type ClientListCmd struct{}
@@ -42,7 +42,7 @@ func (cmd *ClientAddCmd) Run(ctx context.Context, c *clients.Queries) error {
 }
 
 type ClientRemoveCmd struct {
-	Name string `help:"the name of the client" short:"n"`
+	Name string `help:"the name of the client" required:"" short:"n"`
 }
 
 func (cmd *ClientRemoveCmd) Run(ctx context.Context, c *clients.Queries) error {

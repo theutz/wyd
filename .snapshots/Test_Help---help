@@ -3,17 +3,18 @@ Usage: wyd <command> [flags]
 whatcha doing? a time tracking helper
 
 Commands:
-  config               view wyd configuration
-    show               print config to stdout
+  config                  view wyd configuration
+    show                  print config to stdout
 
-  client               work with client list
-    list (show,ls)     list all clients
-    add (create,a)     add a new client
-    remove (delete)    remove a client
+  client                  work with client list
+    list (show,ls)        list all clients
+    add (create,a)        add a new client
+    remove (delete,rm)    remove a client
 
-  project              work with project list
-    list (show,ls)     list all projects
-    add (create,a)     add a new project
+  project                 work with project list
+    list (show,ls)        list all projects
+    add (create,a)        add a new project
+    remove (delete,rm)    remove a project
 
 Flags:
   -h, --help    Show context-sensitive help.
