@@ -11,3 +11,8 @@ RETURNING *;
 DELETE FROM clients
 WHERE name LIKE ?
 RETURNING *;
+
+-- name: QueryByName :one
+SELECT *
+FROM clients
+WHERE name LIKE ?;

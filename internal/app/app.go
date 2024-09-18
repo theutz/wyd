@@ -11,6 +11,7 @@ import (
 	"github.com/theutz/wyd/internal/config"
 	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/queries/clients"
+	"github.com/theutz/wyd/internal/queries/projects"
 )
 
 type Application interface {
@@ -58,6 +59,7 @@ func (a *App) Run() error {
 	defer connection.Close()
 
 	clients := clients.New(connection)
+	projects := projects.New(connection)
 
 	var cli Cli
 
@@ -81,6 +83,7 @@ func (a *App) Run() error {
 			config,
 			a,
 			clients,
+			projects,
 		),
 		kong.BindTo(ctx, (*context.Context)(nil)),
 	)

@@ -1,4 +1,4 @@
-Usage: wyd client add (create,a) [flags]
+Usage: wyd client add (create,a) --name=STRING
 
 add a new client
 
@@ -6,7 +6,6 @@ Flags:
   -h, --help           Show context-sensitive help.
 
   -n, --name=STRING    name of the client
-{1 }
 
-(interface {}) <nil>
+(*fmt.wrapError)(parsing args: missing flags: --name=STRING)
 (int) 0

@@ -11,10 +11,14 @@ Commands:
     add (create,a)     add a new client
     remove (delete)    remove a client
 
+  project              work with project list
+    list (show,ls)     list all projects
+    add (create,a)     add a new project
+
 Flags:
   -h, --help    Show context-sensitive help.
 
 Run "wyd <command> --help" for more information on a command.
 
-(*fmt.wrapError)(parsing args: expected one of "config", "client")
+(*fmt.wrapError)(parsing args: expected one of "config", "client", "project")
 (int) 0

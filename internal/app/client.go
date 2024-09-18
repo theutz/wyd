@@ -27,7 +27,7 @@ func (cmd *ClientListCmd) Run(ctx context.Context, c *clients.Queries) error {
 }
 
 type ClientAddCmd struct {
-	Name string `help:"name of the client" short:"n"`
+	Name string `help:"name of the client" required:"" short:"n"`
 }
 
 func (cmd *ClientAddCmd) Run(ctx context.Context, c *clients.Queries) error {
