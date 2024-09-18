@@ -3,3 +3,5 @@ goose               https://github.com/samhvw8/asdf-goose                     47
 gotestsum           https://github.com/hpcsc/asdf-gotestsum.git               e74c3a0
 just                https://github.com/olofvndrhr/asdf-just.git               3f907ee
 sqlc                https://github.com/dylanrayboss/asdf-sqlc                 aff381e
+lefthook            https://github.com/jtzero/asdf-lefthook.git               01024cc
+golangci-lint       https://github.com/hypnoglow/asdf-golangci-lint.git       fee877b
