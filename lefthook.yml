@@ -19,11 +19,9 @@ pre-commit:
   commands:
     lint:
       tags: style
-      files: git ls-files -m
       glob: "*.go"
-      run: golangci-lint run {files}
+      run: golangci-lint run ./...
     test:
       tags: test
-      files: git ls-files -m
       glob: "*.go"
-      run: gotestsum {files}
+      run: gotestsum ./...
