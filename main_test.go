@@ -49,6 +49,27 @@ func RunMockApp(t *testing.T, migrationFS embed.FS, args ...string) (string, int
 	return out, app.ExitCode(), err
 }
 
+func Test_Incomplete(t *testing.T) {
+	testCases := []struct {
+		args []string
+	}{
+		{[]string{}},
+		{[]string{"config", "show"}},
+		{[]string{"client"}},
+		{[]string{"client", "list"}},
+	}
+
+	for _, testCase := range testCases { //nolint:paralleltest
+		os.Remove(testDbPath)
+		t.Run(strings.Join(testCase.args, " "), func(t *testing.T) {
+			out, exitCode, err := RunMockApp(t, embeddedMigrations, testCase.args...)
+
+			// Assert
+			cupaloy.SnapshotT(t, out, err, exitCode)
+		})
+	}
+}
+
 func Test_Help(t *testing.T) { //nolint:paralleltest
 	testCases := []struct {
 		args []string
@@ -56,10 +77,7 @@ func Test_Help(t *testing.T) { //nolint:paralleltest
 		{[]string{}},
 		{[]string{"--help"}},
 		{[]string{"config", "--help"}},
-		{[]string{"config", "show"}},
-		{[]string{"client"}},
 		{[]string{"client", "--help"}},
-		{[]string{"client", "list"}},
 		{[]string{"client", "list", "--help"}},
 		{[]string{"client", "add", "--help"}},
 	}
