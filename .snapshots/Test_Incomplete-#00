@@ -1,3 +1,0 @@
-
-(*fmt.wrapError)(parsing args: expected one of "config", "client", "project")
-(int) 0

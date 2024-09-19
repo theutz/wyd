@@ -25,6 +25,10 @@ test: generate lint
 update-snapshots:
   UPDATE_SNAPSHOTS=1 just test
 
+# delete all snapshot files
+clean-snapshots:
+  rm -rf .snapshots
+
 # run the program
 run *args: generate
   go run . {{ args }}
