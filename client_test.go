@@ -16,7 +16,7 @@ func Test_AddClient(t *testing.T) { //nolint:paralleltest
 	}
 
 	// Act
-	out, exitCode, err := run("client", "add", "-n", "Delegator")
+	out, exitCode, err := run("client", "add", "-n", "New Client")
 
 	// Assert
 	assert.NoError(t, err)
@@ -35,7 +35,7 @@ func Test_ListClient(t *testing.T) { //nolint:paralleltest
 		return runMockApp(t, embeddedMigrations, args...)
 	}
 
-	names := []string{"Delegator", "Something"}
+	names := []string{"New Client", "Other New Client"}
 	for _, name := range names {
 		_, _, err := run("client", "add", "-n", name)
 		assert.NoError(t, err)
@@ -56,7 +56,7 @@ func Test_DeleteClient(t *testing.T) { //nolint:paralleltest
 		return runMockApp(t, embeddedMigrations, args...)
 	}
 
-	names := []string{"Delegator", "Something"}
+	names := []string{"New Client", "Other New Client"}
 	for _, name := range names {
 		_, _, err := run("client", "add", "-n", name)
 		assert.NoError(t, err)
@@ -66,7 +66,7 @@ func Test_DeleteClient(t *testing.T) { //nolint:paralleltest
 	assert.NoError(t, err)
 
 	// Act
-	out, exitCode, err := run("client", "remove", "-n", "Delegator")
+	out, exitCode, err := run("client", "remove", "-n", "New Client")
 
 	// Assert
 	assert.NoError(t, err)
