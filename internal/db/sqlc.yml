@@ -3,14 +3,14 @@ sql:
   - &base
     engine: "sqlite"
     queries: "clients.sql"
-    schema: "../migrations"
+    schema: "migrations"
     gen:
       go:
         package: "clients"
-        out: "clients"
+        out: "queries/clients"
   - <<: *base
     queries: "projects.sql"
     gen:
       go:
         package: "projects"
-        out: "projects"
+        out: "queries/projects"

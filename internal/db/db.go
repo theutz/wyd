@@ -11,8 +11,11 @@ import (
 
 	_ "github.com/mattn/go-sqlite3" // needed for database connections
 	"github.com/pressly/goose/v3"
+	_ "github.com/sqlc-dev/sqlc" // needed for go generate
 	"github.com/theutz/wyd/internal/util"
 )
+
+//go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
 
 func NewConnection(ctx context.Context, migrationsFS embed.FS, path string) (*sql.DB, error) {
 	dsn, err := makeDsn(path)
@@ -32,7 +35,7 @@ func NewConnection(ctx context.Context, migrationsFS embed.FS, path string) (*sq
 		return nil, fmt.Errorf("setting db dialect: %w", err)
 	}
 
-	if err := goose.UpContext(ctx, connection, "internal/migrations"); err != nil {
+	if err := goose.UpContext(ctx, connection, "internal/db/migrations"); err != nil {
 		return nil, fmt.Errorf("setting migration context: %w", err)
 	}
 

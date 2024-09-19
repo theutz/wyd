@@ -10,8 +10,8 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/theutz/wyd/internal/config"
 	"github.com/theutz/wyd/internal/db"
-	"github.com/theutz/wyd/internal/queries/clients"
-	"github.com/theutz/wyd/internal/queries/projects"
+	"github.com/theutz/wyd/internal/db/queries/clients"
+	"github.com/theutz/wyd/internal/db/queries/projects"
 )
 
 type Application interface {

@@ -9,7 +9,7 @@ import (
 	"github.com/theutz/wyd/internal/app"
 )
 
-//go:embed internal/migrations/*.sql
+//go:embed internal/db/migrations/*.sql
 var embeddedMigrations embed.FS
 
 func main() {

@@ -15,7 +15,7 @@ generate: tidy
   go generate ./... 
 
 # run all tests
-test: generate
+test: generate lint
   gotestsum ./...
 
 # update all snapshots

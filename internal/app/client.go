@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	queries "github.com/theutz/wyd/internal/queries/clients"
+	queries "github.com/theutz/wyd/internal/db/queries/clients"
 	"github.com/theutz/wyd/internal/views"
 )
 

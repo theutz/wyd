@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/theutz/wyd/internal/queries/clients"
-	"github.com/theutz/wyd/internal/queries/projects"
+	"github.com/theutz/wyd/internal/db/queries/clients"
+	"github.com/theutz/wyd/internal/db/queries/projects"
 )
 
 type ProjectCmd struct {
