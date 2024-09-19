@@ -8,6 +8,7 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/log"
+	"github.com/theutz/wyd/internal/cmd"
 	"github.com/theutz/wyd/internal/config"
 	"github.com/theutz/wyd/internal/db"
 	"github.com/theutz/wyd/internal/db/queries/clients"
@@ -61,7 +62,7 @@ func (a *App) Run() error {
 	clients := clients.New(connection)
 	projects := projects.New(connection)
 
-	var cli Cli
+	var cli cmd.Cmd
 
 	parser, err := kong.New(
 		&cli,
@@ -80,8 +81,8 @@ func (a *App) Run() error {
 			WrapUpperBound:      -1,
 		}),
 		kong.Bind(
-			config,
 			a,
+			config,
 			clients,
 			projects,
 		),
