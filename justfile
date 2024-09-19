@@ -4,7 +4,10 @@ default:
 
 # lint all files
 lint:
-  golangci-lint run ./...
+  golangci-lint run --show-stats ./...
+
+fix:
+  golangci-lint run --show-stats --fix ./...
 
 # run go module tidy
 tidy:
