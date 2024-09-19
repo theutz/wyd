@@ -3,13 +3,9 @@ package views
 import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
-	"github.com/charmbracelet/log"
-	"github.com/emirpasic/gods/maps/linkedhashmap"
 )
 
-func Record(record *linkedhashmap.Map) string {
-	logger := log.WithPrefix("record")
-
+func Record(record Entry) string {
 	tbl := table.New().
 		BorderStyle(getBorderStyle()).
 		StyleFunc(func(row, col int) lipgloss.Style {
@@ -32,17 +28,7 @@ func Record(record *linkedhashmap.Map) string {
 
 	iter := record.Iterator()
 	for iter.Next() {
-		key, ok := iter.Key().(string) //nolint:varnamelen
-		if !ok {
-			logger.Fatal("key is not a string")
-		}
-
-		value, ok := iter.Value().(string)
-		if !ok {
-			logger.Fatal("value is not a string")
-		}
-
-		tbl.Row(key, value)
+		tbl.Row(iter.Key(), iter.Value())
 	}
 
 	return tbl.Render()

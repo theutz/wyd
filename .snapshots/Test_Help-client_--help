@@ -1,4 +1,4 @@
-Usage: wyd client <command> [flags]
+Usage: wyd client (c,clients) <command> [flags]
 
 work with client list
 

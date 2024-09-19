@@ -1,10 +1,10 @@
-Usage: wyd client list (show,ls)
+Usage: wyd client (c,clients) list (show,ls)
 
 list all clients
 
 Flags:
   -h, --help    Show context-sensitive help.
-[]
+No records exist.
 
 (interface {}) <nil>
 (int) 0

@@ -6,12 +6,12 @@ Commands:
   config                  view wyd configuration
     show                  print config to stdout
 
-  client                  work with client list
+  client (c,clients)      work with client list
     list (show,ls)        list all clients
     add (create,a)        add a new client
     remove (delete,rm)    remove a client
 
-  project                 work with project list
+  project (p,projects)    work with project list
     list (show,ls)        list all projects
     add (create,a)        add a new project
     remove (delete,rm)    remove a project

@@ -1,4 +1,4 @@
-Usage: wyd client add (create,a) --name=STRING
+Usage: wyd client (c,clients) add (create,a) --name=STRING
 
 add a new client
 

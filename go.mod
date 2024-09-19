@@ -8,10 +8,10 @@ require (
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/charmbracelet/log v0.4.0
-	github.com/emirpasic/gods v1.18.1
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/pressly/goose/v3 v3.22.1
 	github.com/sqlc-dev/sqlc v1.27.0
+	github.com/ugurcsen/gods-generic v0.10.4
 	gopkg.in/yaml.v3 v3.0.1
 )
 

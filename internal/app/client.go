@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	q "github.com/theutz/wyd/internal/queries/clients"
+	queries "github.com/theutz/wyd/internal/queries/clients"
 	"github.com/theutz/wyd/internal/views"
 )
 
@@ -16,13 +16,16 @@ type ClientCmd struct {
 
 type ClientListCmd struct{}
 
-func (cmd *ClientListCmd) Run(ctx context.Context, q *q.Queries) error {
+func (cmd *ClientListCmd) Run(ctx context.Context, q *queries.Queries) error {
 	clients, err := q.All(ctx)
 	if err != nil {
 		return fmt.Errorf("loading all clients: %w", err)
 	}
 
-	fmt.Println(clients)
+	cs := queries.Clients(clients)
+
+	view := views.Table(cs.ToEntries())
+	fmt.Println(view)
 
 	return nil
 }
@@ -31,13 +34,13 @@ type ClientAddCmd struct {
 	Name string `help:"name of the client" required:"" short:"n"`
 }
 
-func (cmd *ClientAddCmd) Run(ctx context.Context, q *q.Queries) error {
+func (cmd *ClientAddCmd) Run(ctx context.Context, q *queries.Queries) error {
 	client, err := q.Create(ctx, cmd.Name)
 	if err != nil {
 		return fmt.Errorf("creating client: %w", err)
 	}
 
-	view := views.Record(client.ToMap())
+	view := views.Record(client.ToEntry())
 	fmt.Println(view)
 
 	return nil
@@ -47,13 +50,14 @@ type ClientRemoveCmd struct {
 	Name string `help:"the name of the client" required:"" short:"n"`
 }
 
-func (cmd *ClientRemoveCmd) Run(ctx context.Context, q *q.Queries) error {
+func (cmd *ClientRemoveCmd) Run(ctx context.Context, q *queries.Queries) error {
 	client, err := q.DeleteByName(ctx, cmd.Name)
 	if err != nil {
 		return fmt.Errorf("deleting client by name %s: %w", cmd.Name, err)
 	}
 
-	fmt.Println(views.Record(client.ToMap()))
+	view := views.Record(client.ToEntry())
+	fmt.Println(view)
 
 	return nil
 }
