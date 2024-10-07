@@ -11,7 +11,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/charmbracelet/log v0.4.0
 	github.com/jaswdr/faker v1.19.1
-	github.com/mattn/go-sqlite3 v1.14.23
+	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/pressly/goose/v3 v3.22.0
 	github.com/sqlc-dev/sqlc v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
